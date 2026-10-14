@@ -1,6 +1,6 @@
 {
   "name": "google-glass-extension",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,6 +9,7 @@
     "test": "node scripts/test.mjs",
     "build": "node scripts/build-ui.mjs",
     "test:results": "node scripts/results-test.mjs",
+    "test:sites": "node scripts/sites-test.mjs",
     "package": "node scripts/package.mjs"
   },
   "engines": {

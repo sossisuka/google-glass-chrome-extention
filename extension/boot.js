@@ -20,7 +20,7 @@
   }
   function sync() {
     const current = route();
-    const allowed = settings.sites?.[site] !== false && settings[`${site}Enabled`] !== false;
+    const allowed = (settings.sites?.[site] ?? settings[`${site}Enabled`]) !== false;
     const enabled = allowed && (current !== 'home' || settings.homepageEnabled !== false) && (current !== 'results' || settings.resultsEnabled !== false) && (current !== 'ai' || settings.aiEnabled !== false);
     const mode = settings.theme === 'light' || (settings.theme === 'system' && matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
     if(html.getAttribute('data-hg-mode') !== mode) html.setAttribute('data-hg-mode', mode);

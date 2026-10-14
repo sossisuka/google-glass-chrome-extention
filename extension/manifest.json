@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Google Glass",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "HeroUI light and dark themes for Google, AI Mode, YouTube and Gmail. Custom new-tab backgrounds and search selectors.",
   "minimum_chrome_version": "120",
   "permissions": [
@@ -192,6 +192,26 @@
         "results-content.js"
       ],
       "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://youtube.com/*"
+      ],
+      "js": [
+        "youtube-ui.js",
+        "youtube-content.js"
+      ],
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "https://mail.google.com/*"
+      ],
+      "js": [
+        "gmail-content.js"
+      ],
+      "run_at": "document_end"
     }
   ],
   "web_accessible_resources": [
@@ -199,6 +219,7 @@
       "resources": [
         "page.css",
         "ui.css",
+        "youtube.css",
         "assets/*",
         "assets/icons/*",
         "assets/flags/*",

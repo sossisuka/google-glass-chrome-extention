@@ -1,0 +1,60 @@
+{
+  "source": "Controlled native markup; no authenticated Gmail account",
+  "checks": [
+    "Plain text mail is readable as soon as the reading pane opens",
+    "Plain, formatted, legacy, quoted and branded HTML email text has at least 4.5:1 contrast",
+    "Branded buttons and colored notices retain their authored colors",
+    "Light mode and disabled customization restore authored email colors and preserve drafts",
+    "Style changes and newly loaded message content are recolored without editing authored CSS",
+    "Opening a previously hidden reading pane applies the theme",
+    "No Gmail adapter exceptions"
+  ],
+  "colors": {
+    "mail-heading": {
+      "color": "rgb(233, 237, 245)",
+      "background": "rgb(13, 16, 21)",
+      "border": "rgb(233, 237, 245)"
+    },
+    "mail-copy": {
+      "color": "rgb(233, 237, 245)",
+      "background": "rgb(13, 16, 21)",
+      "border": "rgb(233, 237, 245)"
+    },
+    "mail-gray": {
+      "color": "rgb(161, 170, 187)",
+      "background": "rgb(13, 16, 21)",
+      "border": "rgba(255, 255, 255, 0.133)"
+    },
+    "mail-brand": {
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(37, 99, 235)",
+      "border": "rgb(255, 255, 255)"
+    },
+    "mail-warning": {
+      "color": "rgb(120, 53, 15)",
+      "background": "rgb(254, 243, 199)",
+      "border": "rgb(120, 53, 15)"
+    },
+    "mail-legacy": {
+      "color": "rgb(233, 237, 245)",
+      "background": "rgb(13, 16, 21)",
+      "border": "rgb(233, 237, 245)"
+    },
+    "mail-alpha": {
+      "color": "rgb(233, 237, 245)",
+      "background": "rgb(13, 16, 21)",
+      "border": "rgb(233, 237, 245)"
+    },
+    "mail-quote": {
+      "color": "rgb(161, 170, 187)",
+      "background": "rgb(13, 16, 21)",
+      "border": "rgba(255, 255, 255, 0.133)"
+    },
+    "mail-dark": {
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(17, 17, 17)",
+      "border": "rgb(255, 255, 255)"
+    }
+  },
+  "errors": []
+}

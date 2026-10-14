@@ -1,0 +1,21 @@
+{
+  "checks": [
+    "HeroUI header, real feed feature shelf, video and Shorts cards render",
+    "Trusted pointer/keyboard input opens native create, account, notification and video menus and selects categories",
+    "Duplicate and hidden native guides cannot repeat sidebar links",
+    "Legacy and modern video markup, sidebar collapse, lazy loading and feed recycling work",
+    "Loading cards retain native intersection visibility and reveal real titles after hydration",
+    "Empty native placeholders render stable skeletons with reduced-motion support",
+    "Delayed thumbnails reveal on load; failed images stop loading and keep the video link usable",
+    "Gmail inbox, reading pane, HTML message, attachment and reply surfaces are dark",
+    "Switches fit in both states, support Space, restore native YouTube and retain Gmail drafts",
+    "YouTube and Gmail fit a 390px viewport",
+    "Native categories remain aligned after horizontal scrolling and narrow-layout changes",
+    "Live light-mode changes update shadow components and Gmail together",
+    "SPA watch/home transitions remove and rebuild feed enhancements",
+    "Search submits Unicode and special characters to real YouTube results",
+    "Site switches reflect legacy preferences and can re-enable a previously disabled Gmail theme",
+    "No JavaScript exceptions or React errors"
+  ],
+  "errors": []
+}

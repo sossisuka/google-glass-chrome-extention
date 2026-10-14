@@ -1,4 +1,4 @@
-import {writeFile,mkdir} from 'node:fs/promises';
+import {writeFile,mkdir,readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import {launch,until,delay} from './cdp.mjs';
@@ -6,12 +6,13 @@ const browser=await launch({extension:fileURLToPath(new URL('../extension/',impo
 const checks=[];
 const errors=[];
 const pass=name=>{checks.push(name);console.log('PASS: '+name);};
+const avatarImage=(await readFile(new URL('../extension/assets/icon-32.png',import.meta.url))).toString('base64');
 function monitor(page){page.on('Runtime.exceptionThrown',e=>errors.push(e.exceptionDetails.exception?.description || e.exceptionDetails.text));page.on('Runtime.consoleAPICalled',e=>{if(e.type==='error')errors.push(e.args.map(a=>a.value || a.description).join(' '));});}
 async function reload(page){const loaded=new Promise(resolve=>{const off=page.on('Page.loadEventFired',()=>{off();resolve();});});await page.send('Page.reload');await loaded;}
 async function shot(page,name,width=1568,height=882){await page.send('Page.bringToFront');await page.send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});await delay(350);await page.evaluate('document.fonts.ready');await page.evaluate('Promise.all([...document.images].map(i=>i.decode().catch(()=>{})))');await writeFile(`qa/${name}.png`,Buffer.from((await page.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false})).data,'base64'));}
 async function fixture(url,body){const page=await browser.page();monitor(page);page.on('Fetch.requestPaused',async p=>{
   if(p.resourceType==='Document')await page.send('Fetch.fulfillRequest',{requestId:p.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'text/html; charset=utf-8'}],body:Buffer.from(body).toString('base64')});
-  else if(p.request.url.includes('googleusercontent.com'))await page.send('Fetch.fulfillRequest',{requestId:p.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'image/svg+xml'}],body:Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect width="40" height="40" fill="#49759c"/><circle cx="20" cy="15" r="8" fill="white"/></svg>').toString('base64')});
+  else if(p.request.url.includes('googleusercontent.com'))await page.send('Fetch.fulfillRequest',{requestId:p.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'image/png'}],body:avatarImage});
   else await page.send('Fetch.continueRequest',{requestId:p.requestId});
 });await page.send('Fetch.enable',{patterns:[{urlPattern:'*',requestStage:'Request'}]});await page.send('Page.navigate',{url});await until(()=>page.evaluate('document.readyState === "complete"'));return page;}
 const paintProbe=`<script>window.paintSamples=[];function recordPaint(){window.paintSamples.push({at:performance.now(),theme:document.documentElement.getAttribute('data-hg-mode'),results:document.documentElement.hasAttribute('data-hg-results'),pending:document.documentElement.hasAttribute('data-hg-pending'),bg:getComputedStyle(document.body).backgroundColor});if(window.paintSamples.length<5)requestAnimationFrame(recordPaint);}requestAnimationFrame(recordPaint);</script>`;
@@ -20,6 +21,9 @@ try{
   const target=await until(async()=> (await (await fetch(`${browser.endpoint}/json/list`)).json()).find(t=>t.type==='service_worker' && t.url.endsWith('/background.js')));
   const base=`chrome-extension://${new URL(target.url).hostname}/`;
   const tab=await browser.page(base+'newtab.html');monitor(tab);
+  // The shared avatar loads in both the host and New Tab; neither should depend on a fake remote URL.
+  tab.on('Fetch.requestPaused',p=>tab.send('Fetch.fulfillRequest',{requestId:p.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'image/png'}],body:avatarImage}));
+  await tab.send('Fetch.enable',{patterns:[{urlPattern:'https://*.googleusercontent.com/*',requestStage:'Request'}]});
   await until(()=>tab.evaluate("Boolean(document.querySelector('.google-wordmark'))"));
   await tab.evaluate("chrome.storage.local.set({settings:{language:'en',theme:'dark',country:'BY',homepageEnabled:true,resultsEnabled:true,aiEnabled:true,liveWeather:false,city:'Minsk',sites:{google:true,youtube:true,gmail:true}},backgroundImage:''})");
   await until(()=>tab.evaluate("document.querySelector('.hg-surface')?.lang==='en'"));
@@ -97,7 +101,7 @@ try{
   await until(()=>youtube.evaluate("document.documentElement.hasAttribute('data-hg-youtube')"));
   await until(()=>gmail.evaluate("document.documentElement.hasAttribute('data-hg-gmail')"));
   assert.equal(await youtube.evaluate("getComputedStyle(document.querySelector('ytd-masthead')).backgroundColor"),'rgb(8, 10, 13)');
-  assert.equal(await gmail.evaluate("getComputedStyle(document.querySelector('.zA')).backgroundColor"),'rgb(34, 40, 50)');
+  assert.equal(await gmail.evaluate("getComputedStyle(document.querySelector('.zA')).backgroundColor"),'rgb(23, 30, 40)');
   await youtube.evaluate("history.pushState({},'', '/watch?v=123');dispatchEvent(new Event('yt-navigate-finish'))");
   assert(await youtube.evaluate("document.documentElement.hasAttribute('data-hg-youtube')"));
   await popup.evaluate("document.querySelector('[data-key=sites][role=tab]').click()");

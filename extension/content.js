@@ -64,7 +64,7 @@
 
   function allowed() {
     const settings = window.HeroGoogleBoot?.settings || {};
-    return window.HeroGoogleBoot?.route() === 'home' && settings.sites?.google !== false && settings.googleEnabled !== false && settings.homepageEnabled !== false;
+    return window.HeroGoogleBoot?.route() === 'home' && (settings.sites?.google ?? settings.googleEnabled) !== false && settings.homepageEnabled !== false;
   }
   function sync() { if(allowed()) mount(); else unmount(); }
   window.addEventListener('hg-route',sync);

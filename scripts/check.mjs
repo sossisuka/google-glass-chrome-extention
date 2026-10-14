@@ -12,6 +12,9 @@ assert.equal(manifest.content_scripts[0].run_at,'document_start');
 assert(manifest.content_scripts[0].css.includes('results.css'));
 assert(manifest.content_scripts[0].matches.includes('https://mail.google.com/*'));
 assert(manifest.content_scripts[0].matches.includes('https://www.youtube.com/*'));
+assert(manifest.content_scripts.some(item=>item.matches.includes('https://www.youtube.com/*') && item.js.includes('youtube-content.js') && item.js.includes('youtube-ui.js')));
+assert(manifest.content_scripts.some(item=>item.matches.includes('https://mail.google.com/*') && item.js.includes('gmail-content.js')));
+assert(manifest.web_accessible_resources.some(item=>item.resources.includes('youtube.css')));
 await Promise.all(declared.map(file => access(new URL(file,directory))));
 for (const file of await readdir(directory)) {
   if (file.endsWith('.js')) execFileSync(process.execPath,['--check',new URL(file,directory).pathname.replace(/^\/(\w:)/,'$1')]);
@@ -24,8 +27,8 @@ for (const file of await readdir(directory)) {
     }
   }
 }
-for (const icon of ['search','keyboard','microphone','scan','arrow-right','plus','x','grid-dots','apps','user','dots-vertical','moon-filled','sun-filled','cloud-filled','cloud-sun','cloud-rain','cloud-snow','cloud-fog','cloud-storm','world','backspace']) await access(new URL(`assets/icons/${icon}.svg`,directory));
-for (const image of ['background.png','orbit.png','google.png','youtube.svg','gmail.svg','drive.svg','maps.svg','photos.svg','gemini.svg','play.svg']) await access(new URL(`assets/${image}`,directory));
+for (const icon of ['search','keyboard','microphone','scan','arrow-right','plus','x','grid-dots','apps','user','dots-vertical','moon-filled','sun-filled','cloud-filled','cloud-sun','cloud-rain','cloud-snow','cloud-fog','cloud-storm','world','backspace','menu-2','bell','home','brand-youtube','subscriptions','history','clock','thumb-up','flame','music','device-gamepad-2','trophy','player-play','player-play-filled']) await access(new URL(`assets/icons/${icon}.svg`,directory));
+for (const image of ['background.png','orbit.png','google.png','youtube.svg','gmail.svg','logo_gmail_lockup_dark.png','logo_gmail_lockup_light.png','drive.svg','maps.svg','photos.svg','gemini.svg','play.svg']) await access(new URL(`assets/${image}`,directory));
 for (const code of Object.keys(countries)) await access(new URL(`assets/flags/${code.toLowerCase()}.svg`,directory));
 for (const image of ['results-background.png','glusk-collage.png','results-glusk.png','results-wiki.png','results-niva.png','results-maps.png']) await access(new URL(`assets/${image}`,directory));
 for (const file of ['ui.js','ui.css','HEROUI-LICENSE.txt','ui.js.LEGAL.txt','results.css']) await access(new URL(file,directory));

@@ -1,0 +1,17 @@
+{
+  "source": "Public channel video components on a home-route test surface; no signed-in account",
+  "checks": [
+    "Live camel-case YouTube view models retain full video titles",
+    "A real YouTube video action menu opens from the visible HeroUI card",
+    "The native Share action opens a real YouTube modal dialog",
+    "The real signed-out YouTube settings dropdown opens from the header",
+    "The live sidebar has unique links and correct selected-page state"
+  ],
+  "errors": [],
+  "titles": [
+    "Обзор на геймплейный Tycoon-трейлер Transport Fever!",
+    "ОТЕЛЬНЫЙ БИЗНЕС В CITIES: SKYLINES 2",
+    "Я УСТРОИЛСЯ РАБОТАТЬ ВОДИТЕЛЕМ ТРАМВАЯ",
+    "СОЗДАЕМ КУРОРТ В CITIES:SKYLINES 2"
+  ]
+}
