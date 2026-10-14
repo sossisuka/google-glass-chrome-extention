@@ -1,0 +1,19 @@
+{
+  "checks": [
+    "HeroUI results preview renders four results, knowledge panel, and source imagery",
+    "Knowledge-panel save action persists",
+    "HeroUI selectors open inside the results settings dialog",
+    "Results layout adapts to mobile without horizontal overflow",
+    "Show all countries expands to the full bundled list",
+    "Country search, selection, closing, and extension persistence",
+    "Escape closes the selector",
+    "ArrowDown and Enter support keyboard selection, including the current country",
+    "Country selector fits a mobile viewport",
+    "Native Google result data, links, forms, and knowledge panel are preserved while themed",
+    "Dynamically added results inherit the theme",
+    "Disabling results theme removes styling and annotations cleanly",
+    "Saved country is sent as the Google search region",
+    "No browser runtime exceptions or console errors"
+  ],
+  "errors": []
+}

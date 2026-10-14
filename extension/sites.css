@@ -1,0 +1,56 @@
+/* Native application controls and data stay in place. Scope every override. */
+html:is([data-hg-youtube],[data-hg-gmail]){color-scheme:dark;--hg-bg:#080a0d;--hg-panel:#15191f;--hg-elevated:#222832;--hg-text:#e9edf5;--hg-muted:#a1aabb;--hg-border:#ffffff16;--hg-accent:#98c8ff;background:var(--hg-bg) !important;}
+html[data-hg-mode=light]:is([data-hg-youtube],[data-hg-gmail]){color-scheme:light;--hg-bg:#f4f6fa;--hg-panel:#ffffff;--hg-elevated:#e9edf4;--hg-text:#202936;--hg-muted:#58657a;--hg-border:#24354b20;--hg-accent:#006ed1;}
+html:is([data-hg-youtube],[data-hg-gmail]) body{background:var(--hg-bg) !important;color:var(--hg-text) !important;}
+html:is([data-hg-youtube],[data-hg-gmail]) :is(input,textarea,[contenteditable=true]):focus{outline:none !important;box-shadow:none !important;}
+html[data-hg-youtube] {
+  --yt-spec-base-background:var(--hg-bg);--yt-spec-raised-background:var(--hg-panel);--yt-spec-menu-background:var(--hg-panel);--yt-spec-general-background-a:var(--hg-bg);--yt-spec-general-background-b:var(--hg-panel);--yt-spec-general-background-c:var(--hg-panel);
+  --yt-spec-text-primary:var(--hg-text);--yt-spec-text-secondary:var(--hg-muted);--yt-spec-icon-active-other:var(--hg-text);--yt-spec-icon-inactive:var(--hg-muted);--yt-spec-badge-chip-background:var(--hg-elevated);--yt-spec-10-percent-layer:var(--hg-border);--yt-spec-call-to-action:var(--hg-accent);
+  --ytd-searchbox-background:var(--hg-panel);--ytd-searchbox-border-color:var(--hg-border);--ytd-searchbox-text-color:var(--hg-text);--ytd-searchbox-legacy-border-color:var(--hg-border);--ytd-searchbox-legacy-border-shadow-color:transparent;--ytd-searchbox-legacy-button-color:var(--hg-elevated);--ytd-searchbox-legacy-button-border-color:var(--hg-border);
+}
+/* YouTube installs its own root palette after loading; keep our selected palette. */
+html[data-hg-youtube],html[data-hg-youtube] ytd-app{
+  --yt-spec-base-background:var(--hg-bg) !important;--yt-spec-raised-background:var(--hg-panel) !important;--yt-spec-menu-background:var(--hg-panel) !important;--yt-spec-general-background-a:var(--hg-bg) !important;--yt-spec-general-background-b:var(--hg-panel) !important;--yt-spec-general-background-c:var(--hg-panel) !important;
+  --yt-spec-text-primary:var(--hg-text) !important;--yt-spec-text-secondary:var(--hg-muted) !important;--yt-spec-wordmark-text:var(--hg-text) !important;--yt-spec-icon-active-other:var(--hg-text) !important;--yt-spec-icon-inactive:var(--hg-muted) !important;--yt-spec-badge-chip-background:var(--hg-elevated) !important;--yt-spec-10-percent-layer:var(--hg-border) !important;--yt-spec-call-to-action:var(--hg-accent) !important;
+  --ytd-searchbox-background:var(--hg-panel) !important;--ytd-searchbox-border-color:var(--hg-border) !important;--ytd-searchbox-text-color:var(--hg-text) !important;--ytd-searchbox-legacy-border-color:var(--hg-border) !important;--ytd-searchbox-legacy-border-shadow-color:transparent !important;--ytd-searchbox-legacy-button-color:var(--hg-elevated) !important;--ytd-searchbox-legacy-button-border-color:var(--hg-border) !important;
+}
+html[data-hg-youtube] :is(ytd-app,#masthead-container,ytd-masthead,ytd-mini-guide-renderer,ytd-guide-renderer,tp-yt-app-drawer #contentContainer,ytd-watch-flexy){background:var(--hg-bg) !important;color:var(--hg-text) !important;}
+html[data-hg-youtube] :is(ytd-page-manager,#page-manager,ytd-browse,ytd-two-column-browse-results-renderer,#home-container-skeleton,#guide-skeleton,#masthead-skeleton){background:var(--hg-bg) !important;color:var(--hg-text) !important;}
+html[data-hg-youtube] :is(.skeleton-bg-color,.skeleton-bg,.skeleton-thumbnail,.skeleton-text,.skeleton-avatar){background:var(--hg-elevated) !important;border-radius:12px;}
+html[data-hg-youtube] :is(ytd-searchbox #container,yt-searchbox .ytSearchboxComponentInputBox){border:1px solid var(--hg-border) !important;border-radius:24px 0 0 24px !important;background:var(--hg-panel) !important;box-shadow:none !important;}
+html[data-hg-youtube] :is(ytd-searchbox #search-icon-legacy,yt-searchbox button.ytSearchboxComponentSearchButton){background:var(--hg-elevated) !important;border-color:var(--hg-border) !important;border-radius:0 24px 24px 0 !important;}
+html[data-hg-youtube] :is(ytd-thumbnail,#thumbnail){border-radius:16px !important;overflow:hidden;}
+html[data-hg-youtube] :is(ytd-rich-item-renderer,ytd-video-renderer){border-radius:20px;}
+html[data-hg-youtube] :is(ytd-menu-popup-renderer,ytd-multi-page-menu-renderer,tp-yt-paper-dialog,yt-dialog-view-model){border:1px solid var(--hg-border) !important;border-radius:20px !important;background:var(--hg-panel) !important;color:var(--hg-text) !important;box-shadow:0 20px 65px #0004;animation:hg-native-appear .2s ease-out;}
+html[data-hg-youtube] :is(yt-chip-cloud-chip-renderer,#chips yt-chip-cloud-chip-renderer){border-radius:12px !important;}
+html[data-hg-youtube] :is(#video-title,#title h1,yt-formatted-string#content-text){color:var(--hg-text) !important;}
+html[data-hg-youtube] :is(yt-formatted-string,yt-icon,ytd-guide-entry-renderer a,#logo-icon,#search-icon-legacy yt-icon){color:var(--hg-text) !important;}
+html[data-hg-youtube] :is(.yt-core-attributed-string,.ytCoreAttributedString,yt-icon .yt-icon-shape,yt-icon svg,.ytSpecIconShapeHost){color:var(--hg-text) !important;}
+html[data-hg-youtube] :is(.yt-spec-button-shape-next--mono,.yt-spec-button-shape-next--tonal){background:var(--hg-elevated) !important;color:var(--hg-text) !important;border-radius:12px !important;}
+html[data-hg-youtube] .ytSpecButtonShapeNextHost{background:var(--hg-elevated) !important;background-image:none !important;color:var(--hg-text) !important;border-radius:12px !important;}
+html[data-hg-youtube] .ytSpecButtonShapeNextHost :is(.ytAttributedString,.ytSpecButtonShapeNextButtonTextContent){color:var(--hg-text) !important;}
+html[data-hg-youtube] #logo-icon :is(path[fill="#000"],path[fill="#000000"],path[fill="#0F0F0F"],path[fill="black"]){fill:var(--hg-text) !important;}
+html[data-hg-youtube] #logo-icon [id^=youtube-paths] path{fill:var(--hg-text) !important;}
+html[data-hg-youtube] ytd-guide-entry-renderer[active]{background:var(--hg-elevated) !important;border-radius:12px;}
+html[data-hg-youtube] ytd-feed-nudge-renderer{background:var(--hg-panel) !important;border:1px solid var(--hg-border) !important;border-radius:20px !important;overflow:hidden;}
+html[data-hg-youtube] ytd-feed-nudge-renderer :is(#wrapper,#content-wrapper){background:var(--hg-panel) !important;}
+html[data-hg-youtube] ytd-feed-nudge-renderer button{background:var(--hg-elevated) !important;color:var(--hg-text) !important;border-radius:12px !important;}
+/* Gmail's stable roles cover inbox, reading pane, compose and settings. */
+html[data-hg-gmail] :is(.nH,.aeF,.bkK,.bq9,.a3s,.AO,.aAU,.aeJ){background-color:transparent !important;}
+html[data-hg-gmail] :is(.aKh,.aeH,.G-atb,.gb_Ea,.gb_Fa,[role=banner]){background:var(--hg-bg) !important;color:var(--hg-text) !important;}
+html[data-hg-gmail] :is(.aic,.z0 > .L3,.aKz){background:var(--hg-elevated) !important;color:var(--hg-text) !important;border-radius:18px !important;}
+html[data-hg-gmail] :is(.aeF,.AO,[role=main]){background:var(--hg-panel) !important;border-radius:20px !important;}
+html[data-hg-gmail] :is(.zA,.yO){background:var(--hg-panel) !important;color:var(--hg-text) !important;box-shadow:inset 0 -1px 0 var(--hg-border) !important;}
+html[data-hg-gmail] .zE{background:var(--hg-elevated) !important;color:var(--hg-text) !important;}
+html[data-hg-gmail] :is(.zA:hover,.x7){background:var(--hg-elevated) !important;}
+html[data-hg-gmail] :is(.yW,.y6,.bog,.bqe,.gD,.hP,.y2,.Wg,.TO,.TN a,.aio,.bsU){color:var(--hg-text) !important;}
+html[data-hg-gmail] :is(.y2,.xW,.g3,.fY){color:var(--hg-muted) !important;}
+html[data-hg-gmail] :is([role=search],.gb_je,.gb_ue){background:var(--hg-elevated) !important;border:1px solid var(--hg-border) !important;border-radius:999px !important;box-shadow:none !important;}
+html[data-hg-gmail] :is(input,textarea){color:var(--hg-text) !important;background-color:transparent !important;}
+html[data-hg-gmail] :is([role=dialog],.AD,.aSs,.J-M){border:1px solid var(--hg-border) !important;background:var(--hg-panel) !important;color:var(--hg-text) !important;border-radius:20px !important;box-shadow:0 20px 65px #0004;animation:hg-native-appear .2s ease-out;}
+html[data-hg-gmail] :is(.a3s,.Am,.editable){color:var(--hg-text);}
+html[data-hg-gmail] :is(.aDh,.aDj,.aDg,.aYF,.J-M .J-N){background:var(--hg-panel) !important;color:var(--hg-text) !important;}
+html[data-hg-gmail] .T-I{border-radius:12px !important;}
+html[data-hg-gmail] .T-I-atl{background:var(--hg-accent) !important;color:#fff !important;border:0 !important;}
+@keyframes hg-native-appear{from{opacity:0;transform:translateY(8px) scale(.98);}to{opacity:1;transform:none;}}
+@media(prefers-reduced-motion:reduce){html:is([data-hg-youtube],[data-hg-gmail]) *{animation:none !important;transition:none !important;}}

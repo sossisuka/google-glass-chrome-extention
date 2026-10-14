@@ -1,0 +1,4 @@
+﻿html,body{margin:0;padding:0;width:390px;min-height:490px;background:#15191f;color-scheme:dark;}
+html[data-hg-mode=light],html[data-hg-mode=light] body{background:#fff;color-scheme:light;}
+body{max-height:590px;overflow:auto;}
+*{box-sizing:border-box;}

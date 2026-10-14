@@ -1,0 +1,257 @@
+{
+  "manifest_version": 3,
+  "name": "Google Glass",
+  "version": "1.2.0",
+  "description": "HeroUI light and dark themes for Google, AI Mode, YouTube and Gmail. Custom new-tab backgrounds and search selectors.",
+  "minimum_chrome_version": "120",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.open-meteo.com/*",
+    "https://geocoding-api.open-meteo.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Google Glass",
+    "default_icon": {
+      "16": "assets/icon-16.png",
+      "32": "assets/icon-32.png",
+      "48": "assets/icon-48.png",
+      "128": "assets/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icon-16.png",
+    "32": "assets/icon-32.png",
+    "48": "assets/icon-48.png",
+    "128": "assets/icon-128.png"
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://google.com/*",
+        "https://www.google.com/*",
+        "https://google.ru/*",
+        "https://www.google.ru/*",
+        "https://google.by/*",
+        "https://www.google.by/*",
+        "https://google.kz/*",
+        "https://www.google.kz/*",
+        "https://google.co.uk/*",
+        "https://www.google.co.uk/*",
+        "https://google.de/*",
+        "https://www.google.de/*",
+        "https://google.fr/*",
+        "https://www.google.fr/*",
+        "https://google.es/*",
+        "https://www.google.es/*",
+        "https://google.it/*",
+        "https://www.google.it/*",
+        "https://google.ca/*",
+        "https://www.google.ca/*",
+        "https://google.com.au/*",
+        "https://www.google.com.au/*",
+        "https://google.co.in/*",
+        "https://www.google.co.in/*",
+        "https://google.co.jp/*",
+        "https://www.google.co.jp/*",
+        "https://google.com.br/*",
+        "https://www.google.com.br/*",
+        "https://google.com.tr/*",
+        "https://www.google.com.tr/*",
+        "https://google.pl/*",
+        "https://www.google.pl/*",
+        "https://google.nl/*",
+        "https://www.google.nl/*",
+        "https://google.com.ua/*",
+        "https://www.google.com.ua/*",
+        "https://google.co.kr/*",
+        "https://www.google.co.kr/*",
+        "https://google.com.mx/*",
+        "https://www.google.com.mx/*",
+        "https://www.youtube.com/*",
+        "https://youtube.com/*",
+        "https://mail.google.com/*"
+      ],
+      "css": [
+        "boot.css",
+        "results.css",
+        "sites.css"
+      ],
+      "js": [
+        "boot.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://google.com/*",
+        "https://www.google.com/*",
+        "https://google.ru/*",
+        "https://www.google.ru/*",
+        "https://google.by/*",
+        "https://www.google.by/*",
+        "https://google.kz/*",
+        "https://www.google.kz/*",
+        "https://google.co.uk/*",
+        "https://www.google.co.uk/*",
+        "https://google.de/*",
+        "https://www.google.de/*",
+        "https://google.fr/*",
+        "https://www.google.fr/*",
+        "https://google.es/*",
+        "https://www.google.es/*",
+        "https://google.it/*",
+        "https://www.google.it/*",
+        "https://google.ca/*",
+        "https://www.google.ca/*",
+        "https://google.com.au/*",
+        "https://www.google.com.au/*",
+        "https://google.co.in/*",
+        "https://www.google.co.in/*",
+        "https://google.co.jp/*",
+        "https://www.google.co.jp/*",
+        "https://google.com.br/*",
+        "https://www.google.com.br/*",
+        "https://google.com.tr/*",
+        "https://www.google.com.tr/*",
+        "https://google.pl/*",
+        "https://www.google.pl/*",
+        "https://google.nl/*",
+        "https://www.google.nl/*",
+        "https://google.com.ua/*",
+        "https://www.google.com.ua/*",
+        "https://google.co.kr/*",
+        "https://www.google.co.kr/*",
+        "https://google.com.mx/*",
+        "https://www.google.com.mx/*"
+      ],
+      "include_globs": [
+        "https://*/",
+        "https://*/?*",
+        "https://*/webhp*"
+      ],
+      "js": [
+        "ui.js",
+        "app.js",
+        "content.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://google.com/*",
+        "https://www.google.com/*",
+        "https://google.ru/*",
+        "https://www.google.ru/*",
+        "https://google.by/*",
+        "https://www.google.by/*",
+        "https://google.kz/*",
+        "https://www.google.kz/*",
+        "https://google.co.uk/*",
+        "https://www.google.co.uk/*",
+        "https://google.de/*",
+        "https://www.google.de/*",
+        "https://google.fr/*",
+        "https://www.google.fr/*",
+        "https://google.es/*",
+        "https://www.google.es/*",
+        "https://google.it/*",
+        "https://www.google.it/*",
+        "https://google.ca/*",
+        "https://www.google.ca/*",
+        "https://google.com.au/*",
+        "https://www.google.com.au/*",
+        "https://google.co.in/*",
+        "https://www.google.co.in/*",
+        "https://google.co.jp/*",
+        "https://www.google.co.jp/*",
+        "https://google.com.br/*",
+        "https://www.google.com.br/*",
+        "https://google.com.tr/*",
+        "https://www.google.com.tr/*",
+        "https://google.pl/*",
+        "https://www.google.pl/*",
+        "https://google.nl/*",
+        "https://www.google.nl/*",
+        "https://google.com.ua/*",
+        "https://www.google.com.ua/*",
+        "https://google.co.kr/*",
+        "https://www.google.co.kr/*",
+        "https://google.com.mx/*",
+        "https://www.google.com.mx/*"
+      ],
+      "js": [
+        "results-content.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "page.css",
+        "ui.css",
+        "assets/*",
+        "assets/icons/*",
+        "assets/flags/*",
+        "assets/fonts/*"
+      ],
+      "matches": [
+        "https://google.com/*",
+        "https://www.google.com/*",
+        "https://google.ru/*",
+        "https://www.google.ru/*",
+        "https://google.by/*",
+        "https://www.google.by/*",
+        "https://google.kz/*",
+        "https://www.google.kz/*",
+        "https://google.co.uk/*",
+        "https://www.google.co.uk/*",
+        "https://google.de/*",
+        "https://www.google.de/*",
+        "https://google.fr/*",
+        "https://www.google.fr/*",
+        "https://google.es/*",
+        "https://www.google.es/*",
+        "https://google.it/*",
+        "https://www.google.it/*",
+        "https://google.ca/*",
+        "https://www.google.ca/*",
+        "https://google.com.au/*",
+        "https://www.google.com.au/*",
+        "https://google.co.in/*",
+        "https://www.google.co.in/*",
+        "https://google.co.jp/*",
+        "https://www.google.co.jp/*",
+        "https://google.com.br/*",
+        "https://www.google.com.br/*",
+        "https://google.com.tr/*",
+        "https://www.google.com.tr/*",
+        "https://google.pl/*",
+        "https://www.google.pl/*",
+        "https://google.nl/*",
+        "https://www.google.nl/*",
+        "https://google.com.ua/*",
+        "https://www.google.com.ua/*",
+        "https://google.co.kr/*",
+        "https://www.google.co.kr/*",
+        "https://google.com.mx/*",
+        "https://www.google.com.mx/*",
+        "https://www.youtube.com/*",
+        "https://youtube.com/*",
+        "https://mail.google.com/*"
+      ]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; base-uri 'self'"
+  }
+}

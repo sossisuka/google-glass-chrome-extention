@@ -1,0 +1,92 @@
+[
+  {
+    "name": "youtube",
+    "consentDismissed": true,
+    "url": "https://www.youtube.com/",
+    "title": "YouTube",
+    "theme": "dark",
+    "ai": false,
+    "youtube": true,
+    "text": "DE\nПропустить\nВойти\nИстория YouTube отключена\nВключить историю просмотра и поиска можно в любое время – тогда предлагаемые видео будут отражать ваши интересы.\n\nЧтобы улучшить рекомендации, включите историю YouTube, подтвердите настройки и разрешите нам использовать файлы cookie и ваши данные. Подробнее…\nИзменить настройки",
+    "main": "YTD-BROWSE",
+    "masthead": "rgb(8, 10, 13)",
+    "palette": [
+      {
+        "selector": "html",
+        "exists": true,
+        "color": "rgb(255, 255, 255)",
+        "text": "#e9edf5",
+        "hg": "#e9edf5",
+        "shadow": false
+      },
+      {
+        "selector": "body",
+        "exists": true,
+        "color": "rgb(233, 237, 245)",
+        "text": "#e9edf5",
+        "hg": "#e9edf5",
+        "shadow": false
+      },
+      {
+        "selector": "ytd-app",
+        "exists": true,
+        "color": "rgb(233, 237, 245)",
+        "text": "#e9edf5",
+        "hg": "#e9edf5",
+        "shadow": false
+      },
+      {
+        "selector": "ytd-guide-entry-renderer",
+        "exists": false,
+        "color": null,
+        "text": null,
+        "hg": null,
+        "shadow": false
+      },
+      {
+        "selector": "ytd-guide-entry-renderer yt-formatted-string",
+        "exists": false,
+        "color": null,
+        "text": null,
+        "hg": null,
+        "shadow": false
+      },
+      {
+        "selector": "#logo-icon",
+        "exists": true,
+        "color": "rgb(233, 237, 245)",
+        "text": "#e9edf5",
+        "hg": "#e9edf5",
+        "shadow": false
+      },
+      {
+        "selector": "ytd-message-renderer",
+        "exists": false,
+        "color": null,
+        "text": null,
+        "hg": null,
+        "shadow": false
+      },
+      {
+        "selector": "ytd-message-renderer yt-formatted-string",
+        "exists": false,
+        "color": null,
+        "text": null,
+        "hg": null,
+        "shadow": false
+      }
+    ]
+  },
+  {
+    "name": "ai",
+    "consentDismissed": true,
+    "url": "https://www.google.com/search?udm=50&aep=11&sei=n0vPauzoKd7ewN4Pw6Dx0Qk",
+    "title": "Поиск в Google",
+    "theme": "dark",
+    "ai": true,
+    "youtube": false,
+    "text": "Перейти к основному контенту\nСправка по использованию специальных возможностей\nВойти\nВсе\nКартинки\nВидео\nНовости\nЕщё\nРезультаты поиска\nПредставляем режим ИИ\nРежим ИИ пока не доступен для вашего устройства или аккаунта.\nПодробнее\nСсылки в нижнем колонтитуле\nГермания\nФранкфурт-на-Майне - Определено по IP-адресу\n - Обновить\nСправка\nОтправить отзыв\nКонфиденциальность\nУсловия",
+    "main": "DIV",
+    "masthead": null
+  }
+]

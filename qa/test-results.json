@@ -1,0 +1,21 @@
+{
+  "browser": "Chrome/149.0.7827.55",
+  "results": [
+    "Chrome new tab navigates to the installed override",
+    "New tab override loads with all local image assets",
+    "Google apps menu opens and closes",
+    "On-screen keyboard enters and deletes text",
+    "Shortcut validation and persistence across reload",
+    "Edit and delete shortcut",
+    "Russian / English settings and mobile layout without horizontal overflow",
+    "Content script mounts an isolated shadow UI on the Google homepage",
+    "Homepage toggle restores native Google accessibility and scroll state",
+    "Search results and Google Images retain their native UI",
+    "Toolbar popup settings update already open extension pages",
+    "Local preview renders and opens its settings dialog",
+    "Opt-in weather fetch, forecast rendering, and 30-minute cache (API response fixture)",
+    "Search form navigates to Google with the query preserved",
+    "No runtime exceptions or console errors during the extension flows"
+  ],
+  "errors": []
+}

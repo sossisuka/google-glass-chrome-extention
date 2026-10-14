@@ -1,0 +1,3 @@
+import {launch,until} from './cdp.mjs';
+const browser=await launch({port:9340});
+try{const page=await browser.page('http://127.0.0.1:4173/selectors.html');await until(()=>page.evaluate("Boolean(document.querySelector('[role=listbox]'))"));console.log(JSON.stringify(await page.evaluate("[...document.querySelectorAll('.hg-reference-select,.hg-selector-portals,.hg-selector-popover,.hg-selector-popover-base')].map(element=>({class:element.className,width:element.getBoundingClientRect().width,style:element.getAttribute('style'),variable:getComputedStyle(element).getPropertyValue('--trigger-width'),max:getComputedStyle(element).maxWidth,html:element.outerHTML.slice(0,450)}))"),null,2));}finally{await browser.stop();}

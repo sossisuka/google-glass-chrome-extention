@@ -1,0 +1,18 @@
+{
+  "checks": [
+    "Side copy removed, silver gradient logo and no active-input outline",
+    "HeroUI color-theme controls persist and update open pages",
+    "Image upload is resized, saved locally, survives reload and can be removed",
+    "Unsupported background formats are rejected with a visible error",
+    "Homepage uses the native Google account avatar and shares it with New Tab",
+    "HeroUI modals and nested country popover work inside Google’s shadow UI",
+    "HeroUI inputs have no outline; a signed-out Google header clears the cached avatar",
+    "Full search navigation is themed before visible paint without loading React",
+    "AI entry point and udm=50 share the theme; SPA transitions update immediately",
+    "Independent Google/YouTube/Gmail toggles restore native UI and retain content",
+    "Light mode applies to native results, YouTube and Gmail without replacing their controls",
+    "Animated modals fit mobile and close with Escape",
+    "No JavaScript exceptions or React console errors"
+  ],
+  "errors": []
+}

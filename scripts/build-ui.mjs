@@ -1,0 +1,10 @@
+import { build } from 'esbuild';
+import { execFileSync } from 'node:child_process';
+import { createRequire } from 'node:module';
+import { writeFile,readFile } from 'node:fs/promises';
+const require = createRequire(import.meta.url);
+await build({entryPoints:['src/selectors.jsx'],bundle:true,minify:true,format:'iife',target:'chrome111',outfile:'extension/ui.js',define:{'process.env.NODE_ENV':'"production"'},legalComments:'linked'});
+execFileSync(process.execPath,['node_modules/@tailwindcss/cli/dist/index.mjs','-i','src/ui.css','-o','extension/ui.css','--minify'],{stdio:'inherit'});
+const source = await readFile('node_modules/@heroui/react/LICENSE','utf8');
+await writeFile('extension/HEROUI-LICENSE.txt',source);
+console.log('Built bundled React + HeroUI selectors.');
