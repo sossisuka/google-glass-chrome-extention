@@ -1,0 +1,64 @@
+{
+  "source": "Anonymized layout fixture based on the user-provided screenshot, not authenticated Gmail",
+  "checks": [],
+  "colors": {
+    ".layout-root": {
+      "background": "rgb(246, 248, 252)",
+      "color": "rgb(233, 237, 245)"
+    },
+    ".left-frame": {
+      "background": "rgb(246, 248, 252)",
+      "color": "rgb(233, 237, 245)"
+    },
+    ".main-wrap": {
+      "background": "rgb(246, 248, 252)",
+      "color": "rgb(233, 237, 245)"
+    },
+    ".right-frame": {
+      "background": "rgb(246, 248, 252)",
+      "color": "rgb(233, 237, 245)"
+    },
+    ".label-heading": {
+      "background": "rgba(0, 0, 0, 0)",
+      "color": "rgb(32, 33, 36)"
+    },
+    ".group-heading": {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(32, 33, 36)"
+    },
+    ".footer-info": {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(95, 99, 104)"
+    },
+    ".native-glyph": {
+      "background": "rgb(32, 33, 36)",
+      "color": "rgb(233, 237, 245)"
+    }
+  },
+  "requests": [
+    "https://ssl.gstatic.com/ui/v1/icons/mail/rfr/logo_gmail_lockup_default_1x_r5.png",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/maps.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/drive.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/gemini.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/menu-2.svg",
+    "https://mail.google.com/mail/u/0/assets/logo_gmail_lockup_dark.png",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/search.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/settings.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/help.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/grid-dots.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/pencil.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/mail.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/star.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/clock.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/player-play.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/file.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/subscriptions.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/chevron-down.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/plus.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/square.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/refresh.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/dots-vertical.svg",
+    "https://mail.google.com/mail/u/0/assets/fonts/Inter.ttf"
+  ],
+  "errors": []
+}

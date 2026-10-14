@@ -63,6 +63,8 @@ Existing features remain: English/Russian UI, searchable country selectors with 
 
 ## Controls
 
+Version **1.2.3** repairs the Gmail issues visible in the supplied live inbox screenshot. The theme now adapts neutral application surfaces outside the reading pane, including full-height sidebars, outer gutters, section headings, the Workspace rail and footer. Monochrome SVG and masked icons gain contrast while colored icons retain their colors. Gmail logo and font URLs use Chrome's absolute extension-resource format, fixing broken images and font loading. Gmail's unread-first layout and its native controls remain in place.
+
 Version **1.2.2** adds HeroUI skeletons for loading YouTube video metadata and thumbnails, including infinite-scroll items. Skeletons follow the card dimensions, respect reduced motion and disappear when the real content arrives. Failed thumbnails stop animating and keep the video link available. It also retains the 1.2.1 repairs for missing titles, repeated sidebar entries and inactive menus: original interactive elements stay aligned with their HeroUI styling so mouse and keyboard actions reach YouTube's native handlers.
 
 YouTube now uses locally bundled HeroUI navigation, search, category controls, featured videos, video cards, and Shorts. The featured shelf uses the first four native feed videos when at least eight are available. Video titles, thumbnails, channel links, filters, and action menus come from YouTube; empty feeds keep YouTube's own message. Switching YouTube off restores its original interface.
@@ -91,7 +93,7 @@ extension/              Load this directory in Chrome
   results-content.js    Native results and AI DOM annotations
   results.css           Native Google / AI theme
   sites.css             YouTube / Gmail themes
-  gmail-content.js      Local contrast adaptation for rendered HTML mail
+  gmail-content.js      Local contrast adaptation for Gmail UI and rendered mail
   youtube-content.js    Native YouTube feed and navigation integration
   youtube-ui.js         Locally bundled HeroUI YouTube components
   youtube.css           Isolated YouTube component styles
@@ -120,6 +122,8 @@ Tests use native Chrome DevTools Protocol in an isolated Chrome for Testing / Ch
 Run `npm run test:sites` for the YouTube/Gmail and switch checks. Screenshots and results are saved under `qa/sites-*`. These screenshots use representative native markup and the existing bundled fixture images; installed YouTube always uses the user's actual feed imagery.
 
 Run `node scripts/gmail-theme-test.mjs` for plain and formatted email contrast, preserved brand colors, dynamic content, light-mode restoration and draft retention. The full `npm test` includes these checks. The Gmail review and before/after screenshots are in `qa/gmail-theme-review.md`. Signed-in Gmail is not available in the isolated test profile; fixtures do not establish fidelity for every live Gmail view or contrast over background images.
+
+`node scripts/gmail-layout-test.mjs` additionally checks the unread-first layout reported by the user, native sidebar/rail/heading colors, actual logo and font resource loading, icons, trusted controls, responsive width and complete restoration. Its anonymized before/after captures are `qa/gmail-layout-*`; the user's private inbox screenshot is not included in the repository.
 
 `node scripts/live-youtube-check.mjs` checks current public YouTube video components, video menus, the Share modal and the signed-out header dropdown. It uses a public channel's components on a home-route test surface, without a signed-in profile. Evidence is saved under `qa/youtube-fixed-live-*` and `qa/youtube-live-test-results.json`.
 

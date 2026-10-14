@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 const target = new URL('../extension/assets/', import.meta.url);
 await mkdir(new URL('icons/', target), { recursive: true });
-const icons = ['search','keyboard','microphone','scan','arrow-right','plus','x','apps','grid-dots','user','dots-vertical','moon-filled','sun-filled','cloud-filled','cloud-rain','cloud-snow','cloud-fog','cloud-storm','world','sparkles','brand-google','trash','check','backspace','settings','cloud','menu-2','bell','home','brand-youtube','subscriptions','history','clock','thumb-up','flame','music','device-gamepad-2','trophy','player-play','player-play-filled'];
+const icons = ['search','keyboard','microphone','scan','arrow-right','plus','x','apps','grid-dots','user','dots-vertical','moon-filled','sun-filled','cloud-filled','cloud-rain','cloud-snow','cloud-fog','cloud-storm','world','sparkles','brand-google','trash','check','backspace','settings','cloud','menu-2','bell','home','brand-youtube','subscriptions','history','clock','thumb-up','flame','music','device-gamepad-2','trophy','player-play','player-play-filled','square','star','help','pencil','mail','file','chevron-down','refresh'];
 const logos = { youtube:'youtube-icon', gmail:'google-gmail', drive:'google-drive', maps:'google-maps', photos:'google-photos', play:'google-play-icon', gemini:'google-gemini-icon' };
 const jobs = [
   ...icons.map(name => ({ file:`icons/${name}.svg`, url:`https://api.iconify.design/${name === 'scan' ? 'simple-icons/googlelens' : `tabler/${name === 'subscriptions' ? 'stack-2' : name}`}.svg?color=%23e8eaed` })),

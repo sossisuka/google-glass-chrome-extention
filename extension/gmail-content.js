@@ -1,9 +1,9 @@
 (() => {
-  // Recolor rendered mail locally. Never read, persist or transmit message text.
+  // Recolor native application surfaces and rendered mail locally; no text access.
   const html=document.documentElement;
   const adapted=new Map();
-  const attributes=['data-hg-gmail-ink','data-hg-gmail-surface','data-hg-gmail-edge'];
-  const properties=['--hg-mail-ink','--hg-mail-surface','--hg-mail-edge'];
+  const attributes=['data-hg-gmail-ink','data-hg-gmail-surface','data-hg-gmail-edge','data-hg-gmail-icon-fill','data-hg-gmail-icon-stroke'];
+  const properties=['--hg-mail-ink','--hg-mail-surface','--hg-mail-edge','--hg-mail-icon-fill','--hg-mail-icon-stroke'];
   let timer;
   function rgb(value) {
     const hex=value.match(/^#([a-f\d]{3}|[a-f\d]{6})$/i);
@@ -35,24 +35,34 @@
     if(!html.hasAttribute('data-hg-gmail') || html.dataset.hgMode!=='dark'){adapted.clear();return;}
     const theme=getComputedStyle(html);
     const panel=rgb(theme.getPropertyValue('--hg-panel').trim()) || [13,16,21,1];
+    const canvas=rgb(theme.getPropertyValue('--hg-bg').trim()) || panel;
     const raised=rgb(theme.getPropertyValue('--hg-elevated').trim()) || [28,34,43,1];
     const text=rgb(theme.getPropertyValue('--hg-text').trim()) || [233,237,245,1];
     const muted=rgb(theme.getPropertyValue('--hg-muted').trim()) || [161,170,187,1];
     const changes=[];
     const live=new Set();
-    for(const root of document.querySelectorAll('.a3s')){
+    const roots=[...(document.body ? [{root:document.body,chrome:true}] : []),...[...document.querySelectorAll('.a3s')].map(root=>({root,chrome:false}))];
+    for(const {root,chrome} of roots){
       if(root.closest('[contenteditable=true]') || !root.getClientRects().length)continue;
       // Read styles before writing overrides so nested inheritance stays consistent.
       const backgrounds=new Map();
       const foregrounds=new Map();
       for(const element of [root,...root.querySelectorAll('*')]){
-        if(element.matches('img,picture,source,video,canvas,svg,svg *,style,script'))continue;
+        if(element.matches('img,picture,source,video,canvas,iframe,style,script,link'))continue;
+        if(chrome && element.closest('.a3s,[contenteditable=true],.Am,.editable'))continue;
+        if(!chrome && element.closest('svg'))continue;
         const style=getComputedStyle(element);
         const originalBg=rgb(style.backgroundColor) || [0,0,0,0];
-        const parentBg=backgrounds.get(element.parentElement) || panel;
+        const parentBg=backgrounds.get(element.parentElement) || (chrome ? canvas : panel);
+        const masked=chrome && style.maskImage!=='none';
+        const iconInk=neutral(parentBg) && contrast(muted,parentBg)>=3 ? muted : contrast(text,parentBg)>=3 ? text : [20,25,32,1];
         let nextBg=originalBg;
-        if(originalBg[3]>.5 && neutral(originalBg) && luminance(originalBg)>.45)nextBg=luminance(originalBg)>.9 ? panel : raised;
-        const effectiveBg=blend(nextBg,parentBg);
+        if(masked && originalBg[3]>0 && neutral(originalBg) && contrast(blend(originalBg,parentBg),parentBg)<3)nextBg=iconInk;
+        else if(originalBg[3]>.5 && neutral(originalBg) && luminance(originalBg)>.45){
+          if(chrome)nextBg=element.closest('[role=main],[role=dialog],[role=menu],[role=listbox],.AD') ? panel : canvas;
+          else nextBg=luminance(originalBg)>.9 ? panel : raised;
+        }
+        const effectiveBg=masked ? parentBg : blend(nextBg,parentBg);
         backgrounds.set(element,effectiveBg);
         const originalInk=rgb(style.color) || text;
         // Inherited text must follow its adapted parent; authored colors stay local.
@@ -71,14 +81,18 @@
         const edge=border && neutral(border) && luminance(border)>.45 && style.borderLeftStyle!=='none';
         const surface=css(nextBg)!==css(originalBg) && originalBg[3]>.5;
         const ink=css(nextInk)!==css(originalInk);
-        if(ink || surface || edge){live.add(element);changes.push({element,ink:ink ? css(nextInk) : null,surface:surface ? css(nextBg) : null,edge:edge ? 'var(--hg-gmail-edge)' : null});}
+        const fill=chrome && element.closest('svg') && rgb(style.fill);
+        const stroke=chrome && element.closest('svg') && rgb(style.stroke);
+        const iconFill=fill && fill[3]>0 && neutral(fill) && contrast(blend(fill,parentBg),parentBg)<3 ? css(iconInk) : null;
+        const iconStroke=stroke && stroke[3]>0 && neutral(stroke) && contrast(blend(stroke,parentBg),parentBg)<3 ? css(iconInk) : null;
+        if(ink || surface || edge || iconFill || iconStroke){live.add(element);changes.push({element,ink:ink ? css(nextInk) : null,surface:surface ? css(nextBg) : null,edge:edge ? 'var(--hg-gmail-edge)' : null,iconFill,iconStroke});}
       }
     }
     for(const element of adapted.keys())if(!live.has(element))adapted.delete(element);
     for(const change of changes){
       const {element}=change;
       if(!adapted.has(element))adapted.set(element,{attributes:attributes.map(name=>element.getAttribute(name)),properties:properties.map(name=>element.style.getPropertyValue(name)),styleWasAbsent:!element.hasAttribute('style')});
-      for(const [index,key] of ['ink','surface','edge'].entries())if(change[key]){element.setAttribute(attributes[index],'');element.style.setProperty(properties[index],change[key]);}
+      for(const [index,key] of ['ink','surface','edge','iconFill','iconStroke'].entries())if(change[key]){element.setAttribute(attributes[index],'');element.style.setProperty(properties[index],change[key]);}
       adapted.get(element).writtenStyle=element.getAttribute('style');
     }
   }
@@ -87,10 +101,10 @@
     if(records.some(record=>{
       if(record.target===html)return true;
       if(record.type==='attributes' && record.attributeName==='style' && adapted.get(record.target)?.writtenStyle===record.target.getAttribute('style'))return false;
-      if(record.target.nodeType===1 && (record.target.closest('.a3s') || record.type==='attributes' && record.target.querySelector('.a3s')))return true;
-      return record.type==='childList' && [...record.addedNodes,...record.removedNodes].some(node=>node.nodeType===1 && (node.matches('.a3s') || node.querySelector('.a3s')));
+      if(record.target.nodeType===1 && record.target.closest('[contenteditable=true],.Am,.editable'))return false;
+      return record.target===document.body || record.target.nodeType===1 && document.body?.contains(record.target);
     }))schedule();
-  }).observe(html,{childList:true,subtree:true,attributes:true,attributeFilter:['data-hg-gmail','data-hg-mode','style','bgcolor','color','class','hidden']});
+  }).observe(html,{childList:true,subtree:true,attributes:true,attributeFilter:['data-hg-gmail','data-hg-mode','style','bgcolor','color','class','hidden','aria-checked','aria-selected','aria-expanded','disabled','fill','stroke']});
   window.addEventListener('hg-route',schedule);
   window.addEventListener('resize',schedule,{passive:true});
   document.addEventListener('DOMContentLoaded',schedule,{once:true});

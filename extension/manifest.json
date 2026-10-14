@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Google Glass",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "HeroUI light and dark themes for Google, AI Mode, YouTube and Gmail. Custom new-tab backgrounds and search selectors.",
   "minimum_chrome_version": "120",
   "permissions": [

@@ -1,4 +1,4 @@
-# Visual QA — Google Glass 1.2.2
+# Visual QA — Google Glass 1.2.3
 
 Functional verification: passed.
 final result: blocked

@@ -1,0 +1,74 @@
+{
+  "source": "Anonymized layout fixture based on the user-provided screenshot, not authenticated Gmail",
+  "checks": [
+    "Unread-first inbox, full sidebar, outer gutters, Workspace rail, headings and footer are dark and readable",
+    "Injected CSS loads the actual bundled Gmail logo and Inter font from extension URLs",
+    "Native monochrome SVG strokes become visible without changing the authored stroke attribute",
+    "Trusted native checkbox, collapsible sections, settings menu and compose controls remain functional",
+    "New native UI surfaces inherit the palette without relying on Gmail class names",
+    "Light mode and disabling customization restore native UI colors and preserve the draft",
+    "Unread-first layout fits a 390px viewport",
+    "No adapter exceptions"
+  ],
+  "colors": {
+    ".layout-root": {
+      "background": "rgb(8, 10, 13)",
+      "color": "rgb(233, 237, 245)"
+    },
+    ".left-frame": {
+      "background": "rgb(8, 10, 13)",
+      "color": "rgb(233, 237, 245)"
+    },
+    ".main-wrap": {
+      "background": "rgb(8, 10, 13)",
+      "color": "rgb(233, 237, 245)"
+    },
+    ".right-frame": {
+      "background": "rgb(8, 10, 13)",
+      "color": "rgb(233, 237, 245)"
+    },
+    ".label-heading": {
+      "background": "rgba(0, 0, 0, 0)",
+      "color": "rgb(233, 237, 245)"
+    },
+    ".group-heading": {
+      "background": "rgb(13, 16, 21)",
+      "color": "rgb(233, 237, 245)"
+    },
+    ".footer-info": {
+      "background": "rgb(13, 16, 21)",
+      "color": "rgb(161, 170, 187)"
+    },
+    ".native-glyph": {
+      "background": "rgb(161, 170, 187)",
+      "color": "rgb(233, 237, 245)"
+    }
+  },
+  "requests": [
+    "https://ssl.gstatic.com/ui/v1/icons/mail/rfr/logo_gmail_lockup_default_1x_r5.png",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/maps.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/drive.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/gemini.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/menu-2.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/logo_gmail_lockup_dark.png",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/search.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/settings.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/help.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/grid-dots.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/pencil.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/mail.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/star.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/clock.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/player-play.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/file.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/subscriptions.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/chevron-down.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/plus.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/square.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/refresh.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/icons/dots-vertical.svg",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/fonts/Inter.ttf",
+    "chrome-extension://gglocnlekihjilkogjbfkjgalifbdhph/assets/logo_gmail_lockup_light.png"
+  ],
+  "errors": []
+}
