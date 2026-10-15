@@ -15,6 +15,8 @@ assert(manifest.content_scripts[0].matches.includes('https://www.youtube.com/*')
 assert(manifest.content_scripts.some(item=>item.matches.includes('https://www.youtube.com/*') && item.js.includes('youtube-content.js') && item.js.includes('youtube-ui.js')));
 assert(manifest.content_scripts.some(item=>item.matches.includes('https://mail.google.com/*') && item.js.includes('gmail-content.js')));
 assert(manifest.web_accessible_resources.some(item=>item.resources.includes('youtube.css')));
+assert(manifest.content_scripts.some(item=>item.matches.includes('https://ya.ru/*') && item.js.includes('yandex-content.js') && item.js.includes('yandex-ui.js')));
+assert(manifest.web_accessible_resources.some(item=>item.resources.includes('yandex.css')));
 await Promise.all(declared.map(file => access(new URL(file,directory))));
 for (const file of await readdir(directory)) {
   if (file.endsWith('.js')) execFileSync(process.execPath,['--check',new URL(file,directory).pathname.replace(/^\/(\w:)/,'$1')]);
@@ -31,6 +33,7 @@ for (const icon of ['search','keyboard','microphone','scan','arrow-right','plus'
 for (const image of ['background.png','orbit.png','google.png','youtube.svg','gmail.svg','logo_gmail_lockup_dark.png','logo_gmail_lockup_light.png','drive.svg','maps.svg','photos.svg','gemini.svg','play.svg']) await access(new URL(`assets/${image}`,directory));
 for (const code of Object.keys(countries)) await access(new URL(`assets/flags/${code.toLowerCase()}.svg`,directory));
 for (const image of ['results-background.png','glusk-collage.png','results-glusk.png','results-wiki.png','results-niva.png','results-maps.png']) await access(new URL(`assets/${image}`,directory));
+for (const image of ['yandex-background.png','yandex-plus.png','yandex-wordmark.svg','yandex-mark.png','yandex-maps.svg','yandex-market.png','yandex-mail.ico','yandex-disk.svg','yandex-music.svg','yandex-kinopoisk.svg','yandex-browser.svg','yandex-weather.svg','yandex-news-tech.jpg','yandex-news-world.jpg','yandex-news-nature.jpg','yandex-news-culture.jpg']) await access(new URL(`assets/${image}`,directory));
 for (const file of ['ui.js','ui.css','HEROUI-LICENSE.txt','ui.js.LEGAL.txt','results.css']) await access(new URL(file,directory));
 for (const file of ['assets/fonts/Inter.ttf','assets/fonts/OFL.txt','assets/flags/LICENSE.txt']) await access(new URL(file,directory));
 console.log('PASS: Manifest V3, bundled resources, script syntax, and CSP-compatible HTML.');

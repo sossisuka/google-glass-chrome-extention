@@ -1,6 +1,6 @@
 # Install Google Glass — English
 
-Google Glass 1.2 requires Chrome 120 or newer. The extension is already built; you do not need Node.js or npm to install it.
+Google Glass 1.3 requires Chrome 120 or newer. The extension is already built; you do not need Node.js or npm to install it.
 
 ## Install
 
@@ -11,17 +11,20 @@ You can also download the entire repository using **Code → Download ZIP** on G
 3. Enable **Developer mode** at the top right.
 4. Click **Load unpacked** and select **`Google-Glass/extension`**, the folder containing **`manifest.json`**. In this workspace, select **`D:\Projects\google\extension`**.
 5. Confirm that **Google Glass** is enabled. Open a new tab and choose **Keep it** if Chrome asks about the New Tab change.
-6. Refresh open Google, YouTube and Gmail pages. Pin **Google Glass** using Chrome's puzzle-piece **Extensions** menu to access its control panel.
+6. Refresh open Google, Yandex, YouTube and Gmail pages. Pin **Google Glass** using Chrome's puzzle-piece **Extensions** menu to access its control panel.
 
 ## Update an existing installation
 
-Replace the files in the existing `extension` folder, keeping its path. Open `chrome://extensions` and click **Reload** on Google Glass. Confirm any updated site-access request for YouTube/Gmail, then refresh those sites and Google, and open a fresh new tab. Settings remain saved when the extension ID stays the same.
+Replace the files in the existing `extension` folder, keeping its path. Open `chrome://extensions` and click **Reload** on Google Glass. Confirm any updated site-access request for Yandex/YouTube/Gmail, then refresh those sites and Google, and open a fresh new tab. Settings remain saved when the extension ID stays the same.
 
 ## Personalize
 
+- **Yandex homepage:** In **Appearance → New tab homepage**, choose **Yandex** or **Google**. The choice updates open New Tab pages. Google remains the initial default. Yandex has its own shortcuts, while theme, custom background and weather settings are shared.
+- **Yandex websites:** Enable **Sites → Yandex** to restyle the homepages of `ya.ru`, `yandex.ru`, `yandex.com`, `yandex.by` and `yandex.kz`, with or without `www`. Reload the extension and allow the added site access when upgrading to 1.3, then refresh existing Yandex tabs. Search results and CAPTCHA pages are preserved. The Yandex page's apps menu or footer opens its settings.
+- **Yandex cards:** Weather is a labeled sample until live weather is enabled; live weather uses the next five hourly slots when available. The news card contains selected example topics. Mail folder links open Yandex Mail; the extension does not read messages or display invented unread counts.
 - **Appearance:** Select **Dark**, **Light** or **System** in the popup's **Appearance** tab. System follows the operating system's color preference.
-- **Custom background:** Click **Upload image** in **Appearance**. Choose a JPG, PNG, WebP or AVIF up to 8 MB. It applies to the Google homepage and New Tab, is resized to a maximum dimension of 2560 pixels and is stored locally as WebP. Click **Remove image** to restore the bundled background. The extension adds a subtle overlay so controls stay readable.
-- **Sites:** Enable or disable **Google**, **YouTube** and **Gmail** independently. The Google homepage, search results and AI Mode have separate switches below the Google switch. These switches control styling; Chrome's site-access permissions are managed in the extension's **Details** page. The website switches do not disable the New Tab override.
+- **Custom background:** Click **Upload image** in **Appearance**. Choose a JPG, PNG, WebP or AVIF up to 8 MB. It applies to the Google and Yandex homepages and New Tab, is resized to a maximum dimension of 2560 pixels and is stored locally as WebP. Click **Remove image** to restore the bundled background. The extension adds a subtle overlay so controls stay readable.
+- **Sites:** Enable or disable **Google**, **Yandex**, **YouTube** and **Gmail** independently. The Google homepage, search results and AI Mode have separate switches below the Google switch. These switches control styling; Chrome's site-access permissions are managed in the extension's **Details** page. The website switches do not disable the New Tab override.
 - **Search:** Choose English, Russian or Automatic, and a country. Search countries by name/code or click **Show all countries** for 252 countries/territories. The country is sent as `gl` when searching from Google Glass; it does not alter your actual location.
 - **Page settings:** **Settings** in the homepage footer opens a HeroUI modal with the same tabs. Changes in this form are applied with **Save changes**. Popup changes save immediately.
 - **Account image:** Sign in to Google and visit its homepage or Gmail once. Google Glass uses the avatar exposed by the native account header and reuses the last observed image on New Tab. If it is unavailable, the account button shows a neutral icon. It opens Google's account page; it is not Google's native account-switcher menu. A confirmed signed-out Google header clears the cached avatar.
@@ -55,6 +58,6 @@ Incognito extensions must be enabled in **Details → Allow in incognito**. Chro
 
 At `chrome://extensions`, disable Google Glass or click **Remove**, then refresh open themed sites. Disabling restores Chrome's normal New Tab. Turning off an individual site switch restores its native styling immediately in existing tabs.
 
-The extension uses local storage and access to the specified Google/YouTube/Gmail sites, plus the two Open-Meteo hosts for opt-in weather. It does not request history, cookies, identity, geolocation or arbitrary-site access, and adds no analytics. Backgrounds and the observed avatar URL stay on this device; avatar images load from Google's original URL.
+The extension uses local storage and access to the specified Google/Yandex/YouTube/Gmail sites, plus the two Open-Meteo hosts for opt-in weather. It does not request history, cookies, identity, geolocation or arbitrary-site access, and adds no analytics. Backgrounds and the observed avatar URL stay on this device; avatar images load from Google's original URL.
 
 [Chrome's official unpacked-extension instructions](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked).

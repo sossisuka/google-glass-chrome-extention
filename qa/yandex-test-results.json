@@ -1,0 +1,16 @@
+{
+  "checks": [
+    "Yandex reference layout renders four cards, seven services and all bundled imagery",
+    "Focused HeroUI search input has no outline",
+    "Yandex on-screen keyboard enters and deletes text",
+    "Yandex shortcut validation, add, edit and delete use separate persistent storage",
+    "Yandex layout and animated settings modal fit mobile and support Escape",
+    "HeroUI control panel switches New Tab between Google and Yandex and updates light mode",
+    "Yandex settings preserve multiple edits, nested selector Escape and an uploaded background across reload and New Tab",
+    "Opt-in Yandex weather requests hourly data and renders the current hour plus four following hours",
+    "Native Yandex homepage is concealed until ready; site toggle and search navigation restore original accessibility",
+    "Search submits the real Yandex text parameter with Unicode and punctuation preserved",
+    "No runtime exceptions or React console errors during Yandex flows"
+  ],
+  "errors": []
+}

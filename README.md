@@ -1,6 +1,6 @@
-# Google Glass 1.2
+# Google Glass 1.3
 
-A ready-to-load Chrome Manifest V3 extension based on the supplied Google homepage, search-results and selector references. Includes HeroUI / NextUI controls, light and dark themes, uploaded backgrounds, Google AI Mode, YouTube and Gmail styling.
+A ready-to-load Chrome Manifest V3 extension based on the supplied Google and Yandex homepage references, search-results and selector references. Includes HeroUI / NextUI controls, light and dark themes, uploaded backgrounds, Google AI Mode, YouTube and Gmail styling.
 
 **Install:** [English](INSTALL.en.md) · [Русский](INSTALL.ru.md). Extract `Google-Glass.zip`, open `chrome://extensions`, enable Developer mode and load the inner `extension` folder. The archive contains compiled files; installation requires no Node.js or build step.
 
@@ -8,9 +8,35 @@ To install from GitHub, choose **Code → Download ZIP** and extract it, or clon
 
 The ZIP contains the ready-to-load extension and guides. Editable source, development scripts and QA evidence are available in the full project workspace.
 
+## Yandex homepage — new in 1.3
+
+Choose **Appearance → New tab homepage → Yandex** in the extension popup, or visit a supported Yandex homepage. Google remains the default for New Tab. The separate **Sites → Yandex** switch controls restyling on Yandex websites.
+
+- Actual HeroUI search, buttons, glass cards, menus and animated settings/shortcut dialogs.
+- Working Yandex search, seven service shortcuts, sign-in, Plus and Mail folder links.
+- Dark, light and system themes, shared custom backgrounds and separate Yandex shortcut storage.
+- Labeled sample weather with opt-in live hourly weather. The news card contains selected example topics; Mail opens the native service without reading a mailbox or inventing unread counts.
+- Supported homepage domains: `ya.ru`, `yandex.ru`, `yandex.com`, `yandex.by` and `yandex.kz`, including `www`. Yandex results and CAPTCHA pages keep their native interface.
+
+Local preview: **http://127.0.0.1:4173/yandex.html**. Run `npm.cmd run dev` from the source workspace first. Reload the extension and refresh existing tabs after upgrading; Chrome may request access to the newly supported Yandex sites.
+
 ## Screenshots
 
 The following screenshots come from the project's browser QA captures.
+
+### Yandex
+
+| Dark | Light |
+| --- | --- |
+| ![Yandex homepage with yellow search, service shortcuts and four glass cards](qa/yandex-desktop.png) | ![Yandex homepage in light mode](qa/yandex-light.png) |
+
+<details>
+<summary>Yandex on mobile and its HeroUI settings</summary>
+
+<img src="qa/yandex-mobile.png" width="320" alt="Responsive Yandex homepage on a mobile viewport">
+<img src="qa/yandex-settings-mobile.png" width="320" alt="Yandex settings with theme, homepage provider and background upload controls">
+
+</details>
 
 ### Dark and light themes
 
@@ -73,13 +99,15 @@ Gmail's dark theme covers the inbox, category tabs, sidebar, reading pane, HTML 
 
 The Sites switches have fixed tracks and contained thumbs in both states, with keyboard focus and Space support.
 
+Version **1.3.0** adds the Yandex homepage and New Tab provider choice. Multiple settings edits now retain the latest draft, and Escape closes a nested selector before its settings dialog.
+
 Pin Google Glass in Chrome's Extensions menu. Its popup has **Appearance**, **Sites** and **Search** tabs. Popup changes save immediately. Homepage **Settings** opens the same controls in a HeroUI modal; choose **Save changes** to commit that form.
 
 New Tab remains controlled by the extension while it is enabled, regardless of the Google website switch. Chrome adds its own extension-attribution / Customize Chrome footer outside the extension document. This browser-owned footer cannot be hidden by the extension. The extension name is now simply **Google Glass**.
 
 ## Scope and privacy
 
-Supported Google country domains are listed in `extension/manifest.json`. Themes cover `/`, `/webhp`, `/search`, `/ai` and `/aimode`, plus `youtube.com` / `www.youtube.com` and `mail.google.com`. Consent and CAPTCHA routes are excluded. Specialized widgets may keep some native styles as these sites change their markup.
+Supported Google country domains are listed in `extension/manifest.json`. Themes cover `/`, `/webhp`, `/search`, `/ai` and `/aimode`, plus `youtube.com` / `www.youtube.com` and `mail.google.com`. The Yandex theme covers supported homepage roots only. Consent and CAPTCHA routes are excluded. Specialized widgets may keep some native styles as these sites change their markup.
 
 The extension uses `storage`, content-script access to those sites, and the two Open-Meteo hosts for optional weather. It does not request cookies, history, geolocation, identity or access to arbitrary sites. There is no analytics or query logging. Backgrounds, settings, shortcuts, avatar URL and weather cache stay in local extension storage. Avatar images are loaded from the URL already exposed by Google. The selected theme name is also cached in supported sites' local storage to select the initial page background. Weather sends the entered city and IP address to Open-Meteo only when enabled. Chrome's optional speech recognition may process audio through its own service.
 
@@ -92,6 +120,9 @@ extension/              Load this directory in Chrome
   content.js            Isolated Google homepage integration
   results-content.js    Native results and AI DOM annotations
   results.css           Native Google / AI theme
+  yandex-ui.js          Bundled HeroUI Yandex homepage
+  yandex-content.js     Isolated native Yandex homepage integration
+  yandex.html           Yandex reference preview
   sites.css             YouTube / Gmail themes
   gmail-content.js      Local contrast adaptation for Gmail UI and rendered mail
   youtube-content.js    Native YouTube feed and navigation integration
@@ -125,6 +156,8 @@ Run `node scripts/gmail-theme-test.mjs` for plain and formatted email contrast, 
 
 `node scripts/gmail-layout-test.mjs` additionally checks the unread-first layout reported by the user, native sidebar/rail/heading colors, actual logo and font resource loading, icons, trusted controls, responsive width and complete restoration. Its anonymized before/after captures are `qa/gmail-layout-*`; the user's private inbox screenshot is not included in the repository.
 
+`npm run test:yandex` checks Yandex search, service assets, keyboard, shortcut editing, mobile dialogs, provider switching, shared background upload, nested selectors, hourly weather and native-page restoration. See [the Yandex reference comparison and review](qa/yandex-design-qa.md).
+
 `node scripts/live-youtube-check.mjs` checks current public YouTube video components, video menus, the Share modal and the signed-out header dropdown. It uses a public channel's components on a home-route test surface, without a signed-in profile. Evidence is saved under `qa/youtube-fixed-live-*` and `qa/youtube-live-test-results.json`.
 
 ## Credits
@@ -132,4 +165,5 @@ Run `node scripts/gmail-theme-test.mjs` for plain and formatted email contrast, 
 HeroUI 2.8.10 and React 18 are bundled locally; MIT notices are in `extension/HEROUI-LICENSE.txt` and `extension/ui.js.LEGAL.txt`. Inter and its SIL OFL are in `assets/fonts`; flag-icons and its MIT license are in `assets/flags`. Product logos use the SVG Logos collection, icons use Tabler / Simple Icons / Meteocons, the Google wordmark uses Google's official image, and decorative artwork was generated from the user's references. Prompts are included in `qa/asset-prompts.md` and `qa/results-asset-prompts.md`. Reference previews are labeled examples; installed Google pages display native results.
 
 This is an independent project, unaffiliated with Google or HeroUI.
-# google-glass-chrome-extention
+
+Yandex product marks belong to Yandex. Bundled service asset URLs are recorded in `extension/assets/yandex-sources.json`; the wordmark is the 2021 Cyrillic artwork attributed to Yandex. News thumbnails are illustrative Unsplash photographs. Particle-wave and Plus illustrations were generated for this project; see [asset prompts](qa/yandex-asset-prompts.md). The project is also unaffiliated with Yandex.

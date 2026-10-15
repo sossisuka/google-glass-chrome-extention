@@ -101,8 +101,12 @@ try{
   await youtube.evaluate("document.querySelectorAll('ytd-rich-item-renderer')[4].querySelector('img').src='/hg-skeleton-thumbnail.png?fail=1'");
   await until(()=>youtube.evaluate("document.querySelector('[data-hg-youtube-slot=card]').shadowRoot.querySelector('.yt-thumbnail')?.getAttribute('aria-busy')==='true'"));
   await until(()=>youtube.pendingThumbnails.length>0);
-  for(const requestId of youtube.pendingThumbnails.splice(0))await youtube.send('Fetch.fulfillRequest',{requestId,responseCode:404,body:''});
-  await until(()=>youtube.evaluate("Boolean(document.querySelector('[data-hg-youtube-slot=card]').shadowRoot.querySelector('.yt-thumbnail-error'))"));
+  // The native image and its themed counterpart may request the failed URL
+  // separately. Keep fulfilling late requests while the adapter remounts it.
+  await until(async()=>{
+    for(const requestId of youtube.pendingThumbnails.splice(0))await youtube.send('Fetch.fulfillRequest',{requestId,responseCode:404,body:''});
+    return youtube.evaluate("Boolean(document.querySelector('[data-hg-youtube-slot=card]').shadowRoot.querySelector('.yt-thumbnail-error'))");
+  });
   assert.equal(await youtube.evaluate("document.querySelector('[data-hg-youtube-slot=card]').shadowRoot.querySelector('.yt-thumbnail').getAttribute('aria-busy')"),'false');
   assert.equal(await youtube.evaluate("document.querySelector('[data-hg-youtube-slot=card]').shadowRoot.querySelector('.yt-thumbnail').href"),'https://www.youtube.com/watch?v=fixture4');
   await youtube.evaluate("document.querySelectorAll('ytd-rich-item-renderer')[4].querySelector('img').src='"+base+"assets/results-glusk.png'");

@@ -17,7 +17,7 @@ async function getWeather(city) {
   const place = result.results?.[0];
   if (!place || !Number.isFinite(place.latitude) || !Number.isFinite(place.longitude)) throw new Error('City not found.');
   const forecast = new URL('https://api.open-meteo.com/v1/forecast');
-  forecast.search = new URLSearchParams({ latitude:place.latitude, longitude:place.longitude, current:'temperature_2m,relative_humidity_2m,is_day,weather_code,wind_speed_10m', daily:'weather_code,temperature_2m_max', wind_speed_unit:'ms', timezone:'auto', forecast_days:'5' });
+  forecast.search = new URLSearchParams({ latitude:place.latitude, longitude:place.longitude, current:'temperature_2m,relative_humidity_2m,is_day,weather_code,wind_speed_10m', daily:'weather_code,temperature_2m_max', hourly:'temperature_2m,weather_code,is_day', wind_speed_unit:'ms', timezone:'auto', forecast_days:'5' });
   const data = await fetchJSON(forecast);
   if (!data.current || !data.daily?.time || !Number.isFinite(data.current.temperature_2m)) throw new Error('Invalid weather response.');
   const cache = { city, place:place.name, fetchedAt:Date.now(), data };

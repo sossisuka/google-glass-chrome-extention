@@ -4,6 +4,8 @@
 @source "../node_modules/@heroui/theme/dist";
 @source "../node_modules/@heroui/react/node_modules/@heroui/theme/dist";
 @source "./selectors.jsx";
+@source "./search-selectors.jsx";
+@source "./yandex.jsx";
 @source "./controls.jsx";
 @source "./results.jsx";
 @source "./youtube.jsx";
@@ -97,6 +99,7 @@
 .hg-theme-options{display:flex !important;flex-direction:row !important;gap:12px !important;flex-wrap:wrap;}
 .hg-theme-radio{padding:0 !important;margin:0 !important;max-width:none !important;gap:7px;}
 .hg-theme-radio-label{font-size:13px !important;color:var(--hg-ui-text) !important;}
+.hg-provider-picker{margin-top:18px;}
 .hg-radio-ring{border-color:var(--hg-ui-muted) !important;}
 .hg-theme-radio[data-selected=true] .hg-radio-ring{border-color:var(--hg-ui-accent) !important;}
 .hg-background-preview{height:138px;border-radius:18px;background:var(--hg-ui-elevated) url('assets/results-background.png') center/cover;margin-top:22px;border:1px solid var(--hg-ui-border);position:relative;overflow:hidden;}

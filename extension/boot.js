@@ -9,9 +9,11 @@
   let avatarTimer;
   let lastAvatar = '';
   const isGoogle = /(^|\.)google\./.test(location.hostname) && location.hostname !== 'mail.google.com';
-  const site = location.hostname === 'mail.google.com' ? 'gmail' : /(^|\.)youtube\.com$/.test(location.hostname) ? 'youtube' : 'google';
+  const isYandex=/(^|\.)yandex\.(ru|com|by|kz)$|(^|\.)ya\.ru$/.test(location.hostname);
+  const site = isYandex ? 'yandex' : location.hostname === 'mail.google.com' ? 'gmail' : /(^|\.)youtube\.com$/.test(location.hostname) ? 'youtube' : 'google';
   function route() {
     const url = new URL(location.href);
+    if(site==='yandex')return url.pathname==='/' && !url.searchParams.has('text') ? 'yandex-home' : '';
     if (site !== 'google') return site;
     if (['/ai','/aimode'].includes(url.pathname) || (url.pathname === '/search' && url.searchParams.get('udm') === '50')) return 'ai';
     if (url.pathname === '/search' && url.searchParams.has('q')) return 'results';
@@ -30,7 +32,7 @@
     html.toggleAttribute('data-hg-ai', Boolean(enabled && current === 'ai'));
     html.toggleAttribute('data-hg-youtube', Boolean(enabled && current === 'youtube'));
     html.toggleAttribute('data-hg-gmail', Boolean(enabled && current === 'gmail'));
-    if (enabled && current === 'home' && !document.querySelector('#hero-google-root')) html.setAttribute('data-hg-home-loading','');
+    if (enabled && ['home','yandex-home'].includes(current) && !document.querySelector('#hero-google-root[data-hg-ready],#hero-yandex-root[data-hg-ready]')) html.setAttribute('data-hg-home-loading','');
     else html.removeAttribute('data-hg-home-loading');
     if (loaded) html.removeAttribute('data-hg-pending');
     const key = `${current}:${enabled}:${mode}`;
@@ -49,7 +51,7 @@
     sync();
     return settings;
   }).catch(() => {loaded = true;sync();return settings;});
-  window.HeroGoogleBoot = {ready, get settings(){return settings;}, route, sync, finishHome(){html.removeAttribute('data-hg-home-loading');clearTimeout(failSafe);}};
+  window.HeroGoogleBoot = {ready, get settings(){return settings;}, route, sync, finishHome(){document.querySelector('#hero-google-root,#hero-yandex-root')?.setAttribute('data-hg-ready','');html.removeAttribute('data-hg-home-loading');clearTimeout(failSafe);}};
   chrome.storage.onChanged.addListener((changes,area) => {
     if(area === 'local' && changes.settings){settings = changes.settings.newValue || {};sync();}
   });

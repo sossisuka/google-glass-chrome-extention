@@ -2,5 +2,5 @@
 html[data-hg-pending],html[data-hg-home-loading]{background:#080a0d !important;color-scheme:dark;}
 html[data-hg-mode=light][data-hg-pending],html[data-hg-mode=light][data-hg-home-loading]{background:#f4f6fa !important;color-scheme:light;}
 html[data-hg-pending] body{visibility:hidden !important;}
-html[data-hg-home-loading] body > :not(#hero-google-root){visibility:hidden !important;}
-html[data-hg-home-loading] #hero-google-root{visibility:hidden !important;}
+html[data-hg-home-loading] body > :not(#hero-google-root):not(#hero-yandex-root){visibility:hidden !important;}
+html[data-hg-home-loading] :is(#hero-google-root,#hero-yandex-root){visibility:hidden !important;}

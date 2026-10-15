@@ -57,6 +57,7 @@
       if (extensionStorage) return chrome.storage.local.set(value);
       const previous = await this.get();
       localStorage.setItem('hero-google', JSON.stringify({ ...previous, ...value }));
+      window.dispatchEvent(new CustomEvent('hg-settings-change',{detail:value}));
     }
   };
 

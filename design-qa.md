@@ -1,9 +1,11 @@
-# Visual QA — Google Glass 1.2.3
+# Visual QA — Google Glass 1.3.0
 
 Functional verification: passed.
-final result: blocked
+Latest homepage visual review: passed.
 
-The latest review is [qa/sites-design-qa.md](qa/sites-design-qa.md). YouTube HeroUI components, Gmail dark/light surfaces and the repaired control-panel switches are implemented and browser tested. The exact visual comparison is blocked because the new reference attachments have no local source paths for a combined comparison. The report records the inspected renders, repairs, passing interactions and live-account limitations.
+The latest review is [qa/yandex-design-qa.md](qa/yandex-design-qa.md). It includes reference/render comparisons, desktop/mobile/light-mode screenshots, shared HeroUI controls, custom backgrounds, provider switching and native Yandex homepage integration. Functional results are in [qa/yandex-test-results.json](qa/yandex-test-results.json).
+
+The previous [qa/sites-design-qa.md](qa/sites-design-qa.md) records the YouTube/Gmail review and its original attachment-comparison limitation. That historical limitation does not apply to the Yandex reference, which is included in this workspace. Live-account limitations remain documented in the relevant reports.
 
 The previous [qa/v2-design-qa.md](qa/v2-design-qa.md) records earlier reference/render comparisons, homepage and modal checks, uploaded backgrounds, avatars, light mode and native site themes.
 

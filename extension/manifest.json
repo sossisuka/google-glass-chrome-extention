@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Google Glass",
-  "version": "1.2.3",
-  "description": "HeroUI light and dark themes for Google, AI Mode, YouTube and Gmail. Custom new-tab backgrounds and search selectors.",
+  "version": "1.3.0",
+  "description": "HeroUI Google and Yandex homepages, AI Mode, YouTube and Gmail themes. Custom backgrounds, light mode and New Tab choices.",
   "minimum_chrome_version": "120",
   "permissions": [
     "storage"
@@ -76,6 +76,16 @@
         "https://www.google.co.kr/*",
         "https://google.com.mx/*",
         "https://www.google.com.mx/*",
+        "https://ya.ru/*",
+        "https://www.ya.ru/*",
+        "https://yandex.ru/*",
+        "https://www.yandex.ru/*",
+        "https://yandex.com/*",
+        "https://www.yandex.com/*",
+        "https://yandex.by/*",
+        "https://www.yandex.by/*",
+        "https://yandex.kz/*",
+        "https://www.yandex.kz/*",
         "https://www.youtube.com/*",
         "https://youtube.com/*",
         "https://mail.google.com/*"
@@ -195,6 +205,29 @@
     },
     {
       "matches": [
+        "https://ya.ru/*",
+        "https://www.ya.ru/*",
+        "https://yandex.ru/*",
+        "https://www.yandex.ru/*",
+        "https://yandex.com/*",
+        "https://www.yandex.com/*",
+        "https://yandex.by/*",
+        "https://www.yandex.by/*",
+        "https://yandex.kz/*",
+        "https://www.yandex.kz/*"
+      ],
+      "include_globs": [
+        "https://*/",
+        "https://*/?*"
+      ],
+      "js": [
+        "yandex-ui.js",
+        "yandex-content.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
         "https://www.youtube.com/*",
         "https://youtube.com/*"
       ],
@@ -220,6 +253,7 @@
         "page.css",
         "ui.css",
         "youtube.css",
+        "yandex.css",
         "assets/*",
         "assets/icons/*",
         "assets/flags/*",
@@ -266,6 +300,16 @@
         "https://www.google.co.kr/*",
         "https://google.com.mx/*",
         "https://www.google.com.mx/*",
+        "https://ya.ru/*",
+        "https://www.ya.ru/*",
+        "https://yandex.ru/*",
+        "https://www.yandex.ru/*",
+        "https://yandex.com/*",
+        "https://www.yandex.com/*",
+        "https://yandex.by/*",
+        "https://www.yandex.by/*",
+        "https://yandex.kz/*",
+        "https://www.yandex.kz/*",
         "https://www.youtube.com/*",
         "https://youtube.com/*",
         "https://mail.google.com/*"
