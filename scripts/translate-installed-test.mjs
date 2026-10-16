@@ -2,6 +2,7 @@ import {fileURLToPath} from 'node:url';
 import {writeFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import {launch,until,delay} from './cdp.mjs';
+import {waitForGoogleUI} from './google-live.mjs';
 const browser=await launch({extension:fileURLToPath(new URL('../extension/',import.meta.url)),port:9369});
 const checks=[],errors=[];let page;
 const root="document.querySelector('#hero-translate-root')?.shadowRoot";
@@ -14,13 +15,25 @@ async function click(selector){
 }
 async function escape(){await page.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});await page.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});}
 try{
+  const google=await browser.page('https://www.google.com/');
+  await google.send('Page.bringToFront');await google.send('Emulation.setDeviceMetricsOverride',{width:1568,height:882,deviceScaleFactor:1,mobile:false});
+  const googleRoot="document.querySelector('#hero-google-root')?.shadowRoot";
+  await waitForGoogleUI(google,`Boolean(${googleRoot}?.querySelector('.google-wordmark')) && !document.documentElement.hasAttribute('data-hg-home-loading')`);
+  async function googleClick(selector){const point=await google.evaluate(`(()=>{const r=${googleRoot}.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`);await google.send('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point});await google.send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});}
+  await googleClick('[data-action=apps]');
+  await until(()=>google.evaluate(`${googleRoot}.querySelector('#apps-menu').hidden===false`));
+  await google.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});await google.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+  pass('Comparison: the installed www.google.com homepage opens its apps menu with real pointer input in the same profile');
+  await googleClick('.footer [data-action=settings]');
+  await until(()=>google.evaluate(`Boolean(${googleRoot}.querySelector('#settings-form'))`));
+  await delay(200);await google.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});await google.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+  await until(()=>google.evaluate(`!${googleRoot}.querySelector('#settings-form')`));
+  pass('Comparison: the shared HeroUI modal opens and dismisses on the live Google homepage');
   page=await browser.page('https://translate.google.com/');
   page.on('Runtime.exceptionThrown',event=>{errors.push(event.exceptionDetails.exception?.description || event.exceptionDetails.text);console.log('EXCEPTION',errors.at(-1));});
   page.on('Runtime.consoleAPICalled',event=>{if(['error','warning'].includes(event.type))console.log('CONSOLE',event.type,event.args.map(a=>a.value || a.description).join(' '));});
   await page.send('Page.bringToFront');await page.send('Emulation.setDeviceMetricsOverride',{width:1568,height:882,deviceScaleFactor:1,mobile:false});
-  await until(()=>page.evaluate("Boolean(document.querySelector('textarea.er8xn')) || location.hostname==='consent.google.com' && Boolean(document.querySelector('button[aria-label]'))"),30000);
-  if(await page.evaluate("location.hostname==='consent.google.com'"))await page.evaluate("[...document.querySelectorAll('button')].find(el=>/Reject all|Отклонить все/.test(el.textContent) && el.getClientRects().length)?.click()");
-  await until(()=>page.evaluate(`Boolean(${root}?.querySelector('#translate-source')) && !document.documentElement.hasAttribute('data-hg-home-loading')`),30000);await delay(500);
+  await waitForGoogleUI(page,`Boolean(${root}?.querySelector('#translate-source')) && !document.documentElement.hasAttribute('data-hg-home-loading')`);await delay(500);
   await click('.tr-header-actions button:nth-of-type(2)');
   await until(()=>page.evaluate(`Boolean(${root}?.querySelector('.tr-apps-grid'))`));await delay(300);
   assert(await page.evaluate(`Boolean(${root}?.querySelector('.tr-apps-grid'))`));
@@ -54,7 +67,7 @@ try{
   await writeFile('qa/translate-installed-interactions.png',Buffer.from((await page.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false})).data,'base64'));
   assert.deepEqual(errors,[]);pass('No installed-page runtime exceptions');
   await page.evaluate("document.body.inert=hgBodyInert;for(const type of ['pointerdown','pointerup','mousedown','mouseup','click','keydown','keyup'])document.body.removeEventListener(type,hgBodyTrap,true)");
-  await writeFile('qa/translate-installed-results.json',JSON.stringify({url:'https://translate.google.com/',checks,errors},null,2)+'\n');
+  await writeFile('qa/translate-installed-results.json',JSON.stringify({url:'https://translate.google.com/',comparison:'https://www.google.com/',checks,errors},null,2)+'\n');
 }catch(error){
   const diagnostic=await page?.evaluate(`({url:location.href,html:document.documentElement.outerHTML.slice(0,700),inert:[...document.querySelectorAll('[inert]')].map(e=>e.tagName+'#'+e.id),rootInert:document.querySelector('#hero-translate-root')?.inert,active:document.activeElement?.outerHTML.slice(0,200),shadowActive:${root}?.activeElement?.outerHTML.slice(0,200),menus:${root}?.querySelectorAll('[role=dialog],[role=listbox]').length,theme:${root}?.querySelector('.tr-surface')?.dataset.theme})`).catch(()=>null);console.error(diagnostic);
   await writeFile('qa/translate-installed-results.json',JSON.stringify({checks,errors,failure:error.message,diagnostic},null,2)+'\n');

@@ -2,6 +2,7 @@ import {fileURLToPath} from 'node:url';
 import {writeFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import {launch,until,delay} from './cdp.mjs';
+import {waitForGoogleUI} from './google-live.mjs';
 const browser=await launch({extension:fileURLToPath(new URL('../extension/',import.meta.url)),port:9363});
 const checks=[],errors=[];
 let livePage;
@@ -16,12 +17,8 @@ try{
   page.on('Runtime.exceptionThrown',event=>errors.push(event.exceptionDetails.exception?.description || event.exceptionDetails.text));
   await page.send('Page.bringToFront');
   await page.send('Emulation.setDeviceMetricsOverride',{width:1568,height:882,deviceScaleFactor:1,mobile:false});
-  await until(()=>page.evaluate("Boolean(document.querySelector('textarea.er8xn')) || location.hostname==='consent.google.com' && Boolean(document.querySelector('button[aria-label]'))"),30000);
-  if(await page.evaluate("location.hostname==='consent.google.com'")){
-    await page.evaluate("[...document.querySelectorAll('button')].find(el=>/Отклонить все|Reject all/.test(el.textContent) && el.getClientRects().length)?.click()");
-  }
   const root="document.querySelector('#hero-translate-root')?.shadowRoot";
-  await until(()=>page.evaluate(`Boolean(${root}?.querySelector('#translate-source')) && !document.documentElement.hasAttribute('data-hg-home-loading')`),30000);
+  await waitForGoogleUI(page,`Boolean(${root}?.querySelector('#translate-source')) && !document.documentElement.hasAttribute('data-hg-home-loading')`);
   await delay(400);
   await writeFile('qa/translate-live-empty.png',Buffer.from((await page.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false})).data,'base64'));
   pass('Installed theme mounts over the current public Google Translate text interface');

@@ -1,0 +1,13 @@
+{
+  "checks": [
+    "URL-only native language changes keep ru/en selected instead of reverting to stale native tabs",
+    "Native value properties and history changes synchronize without requiring a DOM mutation",
+    "Native textarea property-only updates synchronize without navigation or an input event",
+    "Browser Back and Forward update the selected languages",
+    "Trusted Copy writes the translation even when the site Clipboard API permission is denied",
+    "Share copies the current text and language pair through the same denied-permission fallback",
+    "Clear immediately clears stale native results and disables copying an empty translation",
+    "No native synchronization or clipboard runtime exceptions"
+  ],
+  "errors": []
+}

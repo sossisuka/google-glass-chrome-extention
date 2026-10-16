@@ -1,0 +1,54 @@
+import {fileURLToPath} from 'node:url';
+import {writeFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import {launch,until,delay} from './cdp.mjs';
+const browser=await launch({extension:fileURLToPath(new URL('../extension/',import.meta.url)),port:9370});
+const checks=[],errors=[];let page;
+const root="document.querySelector('#hero-translate-root')?.shadowRoot";
+const pass=name=>{checks.push(name);console.log('PASS: '+name);};
+async function evaluate(expression){const result=await page.send('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true,userGesture:false});if(result.exceptionDetails)throw Error(result.exceptionDetails.exception?.description || result.exceptionDetails.text);return result.result.value;}
+async function click(selector){const point=await evaluate(`(()=>{const r=${root}.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`);await page.send('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point});await page.send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});}
+try{
+  page=await browser.page();page.on('Runtime.exceptionThrown',event=>errors.push(event.exceptionDetails.exception?.description || event.exceptionDetails.text));
+  const fixture=`<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>Native state fixture</title></head><body><main><div role="tablist"><button role="tab" data-language-code="auto" aria-selected="true">Auto</button><button role="tab" data-language-code="ru" aria-selected="false">Russian</button></div><div role="tablist"><button role="tab" data-language-code="ru" aria-selected="true">Russian</button><button role="tab" data-language-code="en" aria-selected="false">English</button></div><textarea class="er8xn" aria-label="Исходный текст"></textarea><div class="ryNqvb">Hello</div></main><script>document.querySelector('textarea').value='Привет';document.querySelectorAll('[data-language-code]').forEach(button=>button.addEventListener('click',()=>{const url=new URL(location.href);url.searchParams.set(button.parentElement===document.querySelector('[role=tablist]')?'sl':'tl',button.dataset.languageCode);history.pushState({},'',url)}));</script></body></html>`;
+  page.on('Fetch.requestPaused',event=>page.send('Fetch.fulfillRequest',{requestId:event.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'text/html; charset=utf-8'}],body:Buffer.from(fixture).toString('base64')}));
+  await page.send('Fetch.enable',{patterns:[{urlPattern:'https://translate.google.com/*',resourceType:'Document',requestStage:'Request'}]});
+  await page.send('Page.navigate',{url:'https://translate.google.com/?sl=auto&tl=ru'});
+  await page.send('Page.bringToFront');await page.send('Emulation.setDeviceMetricsOverride',{width:1568,height:882,deviceScaleFactor:1,mobile:false});
+  await until(()=>evaluate(`Boolean(${root}?.querySelector('#translate-source')) && !document.documentElement.hasAttribute('data-hg-home-loading')`));await delay(200);
+  await click('.tr-source-pane [data-language=ru]');await click('.tr-target-pane [data-language=en]');
+  await until(()=>evaluate(`new URL(location.href).searchParams.get('sl')==='ru' && new URL(location.href).searchParams.get('tl')==='en' && ${root}.querySelector('.tr-source-pane [data-language=ru]').getAttribute('aria-pressed')==='true' && ${root}.querySelector('.tr-target-pane [data-language=en]').getAttribute('aria-pressed')==='true'`),3000);
+  await delay(400);
+  assert(await evaluate(`${root}.querySelector('.tr-source-pane [data-language=ru]').getAttribute('aria-pressed')==='true' && ${root}.querySelector('.tr-target-pane [data-language=en]').getAttribute('aria-pressed')==='true'`));
+  assert.equal(await evaluate(`${root}.querySelector('.tr-result').textContent`),'Hello');
+  pass('URL-only native language changes keep ru/en selected instead of reverting to stale native tabs');
+  await evaluate("document.querySelector('textarea.er8xn').value='Новый текст';history.pushState({},'','/?sl=en&tl=de')");
+  await until(()=>evaluate(`${root}.querySelector('#translate-source').value==='Новый текст' && ${root}.querySelector('.tr-source-pane [data-language=en]').getAttribute('aria-pressed')==='true' && ${root}.querySelector('.tr-target-pane [data-language=de]').getAttribute('aria-pressed')==='true'`),3000);
+  pass('Native value properties and history changes synchronize without requiring a DOM mutation');
+  await evaluate("document.querySelector('textarea.er8xn').value='Только значение'");
+  await until(()=>evaluate(`${root}.querySelector('#translate-source').value==='Только значение'`),3000);
+  pass('Native textarea property-only updates synchronize without navigation or an input event');
+  await evaluate('history.back()');
+  await until(()=>evaluate(`${root}.querySelector('.tr-source-pane [data-language=ru]')?.getAttribute('aria-pressed')==='true' && ${root}.querySelector('.tr-target-pane [data-language=en]')?.getAttribute('aria-pressed')==='true'`),3000);
+  await evaluate('history.forward()');
+  await until(()=>evaluate(`${root}.querySelector('.tr-source-pane [data-language=en]')?.getAttribute('aria-pressed')==='true' && ${root}.querySelector('.tr-target-pane [data-language=de]')?.getAttribute('aria-pressed')==='true'`),3000);
+  pass('Browser Back and Forward update the selected languages');
+  await browser.connection.send('Browser.setPermission',{origin:'https://translate.google.com',permission:{name:'clipboard-write'},setting:'denied'});
+  await click('.tr-result-toolbar button:first-of-type');
+  await until(()=>evaluate(`${root}.querySelector('.tr-toast')?.textContent==='Перевод скопирован'`),3000);
+  await browser.connection.send('Browser.grantPermissions',{origin:'https://translate.google.com',permissions:['clipboardReadWrite','clipboardSanitizedWrite']});
+  assert.equal(await page.evaluate('navigator.clipboard.readText()'),'Hello');
+  pass('Trusted Copy writes the translation even when the site Clipboard API permission is denied');
+  await browser.connection.send('Browser.setPermission',{origin:'https://translate.google.com',permission:{name:'clipboard-write'},setting:'denied'});
+  await click('.tr-result-toolbar button:nth-of-type(3)');
+  await until(()=>evaluate(`${root}.querySelector('.tr-toast')?.textContent==='Ссылка на перевод скопирована'`),3000);
+  await browser.connection.send('Browser.grantPermissions',{origin:'https://translate.google.com',permissions:['clipboardReadWrite','clipboardSanitizedWrite']});
+  const shared=new URL(await page.evaluate('navigator.clipboard.readText()'));
+  assert.equal(shared.searchParams.get('text'),'Только значение');assert.equal(shared.searchParams.get('sl'),'en');assert.equal(shared.searchParams.get('tl'),'de');
+  pass('Share copies the current text and language pair through the same denied-permission fallback');
+  await click('.tr-clear');
+  await until(()=>evaluate(`${root}.querySelector('#translate-source').value==='' && !${root}.querySelector('.tr-result.has-result') && ${root}.querySelector('.tr-result-toolbar button').disabled`),3000);
+  pass('Clear immediately clears stale native results and disables copying an empty translation');
+  assert.deepEqual(errors,[]);pass('No native synchronization or clipboard runtime exceptions');
+  await writeFile('qa/translate-state-results.json',JSON.stringify({checks,errors},null,2)+'\n');
+}catch(error){const diagnostic=await evaluate(`({url:location.href,source:${root}?.querySelector('.tr-source-pane .is-selected')?.dataset.language,target:${root}?.querySelector('.tr-target-pane .is-selected')?.dataset.language,text:${root}?.querySelector('#translate-source')?.value,output:${root}?.querySelector('.tr-result')?.textContent,notice:${root}?.querySelector('.tr-toast')?.textContent})`).catch(()=>null);console.error(diagnostic);throw error;}finally{await browser.stop();}

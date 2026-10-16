@@ -1,6 +1,9 @@
 {
   "url": "https://translate.google.com/",
+  "comparison": "https://www.google.com/",
   "checks": [
+    "Comparison: the installed www.google.com homepage opens its apps menu with real pointer input in the same profile",
+    "Comparison: the shared HeroUI modal opens and dismisses on the live Google homepage",
     "Installed root URL receives real pointer input and opens/closes the apps menu",
     "Installed controls remain clickable when the native body is inert and intercepts pointer/keyboard events",
     "Installed searchable language menu accepts typing and a trusted option click",

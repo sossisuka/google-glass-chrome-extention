@@ -1,4 +1,4 @@
-# Google Glass 1.4.1
+# Google Glass 1.4.2
 
 A ready-to-load Chrome Manifest V3 extension based on the supplied Google, Yandex, Translate, search-results and selector references. Includes HeroUI / NextUI controls, light and dark themes, uploaded backgrounds, Google AI Mode, YouTube and Gmail styling.
 
@@ -8,11 +8,19 @@ To install from GitHub, choose **Code → Download ZIP** and extract it, or clon
 
 The ZIP contains the ready-to-load extension and guides. Editable source, development scripts and QA evidence are available in the full project workspace.
 
+## Translate state and Copy repair — 1.4.2
+
+Translate now follows native `sl`/`tl` URL changes, browser history and textarea values even when Google produces no DOM mutation. The visible language pair and result no longer remain stale after navigation. Copy and Share use a direct-copy fallback when the site's Clipboard API permission is denied; no clipboard-reading permission is added. Clear also clears stale native output immediately.
+
+Verified on the real Google Translate site with Russian → English (`Доброе утро` → `Good morning`) and a clipboard read after copying. The same isolated profile also exercised the installed `www.google.com` homepage's apps and shared settings modal. [Regression review](qa/translate-state-review.md) · [Live ru→en capture](qa/translate-live-ru-en.png).
+
+Reload Google Glass at `chrome://extensions`, confirm **1.4.2**, then refresh existing Translate tabs. The previous 1.4.1 body-isolation change did not cover the URL/value synchronization and clipboard-denial cases; this release adds those regression checks.
+
 ## Installed-page interaction repair — 1.4.1
 
 The Google, Translate and Yandex interfaces now mount outside the native page body. This prevents body-level capture handlers and inherited `inert` states from swallowing clicks, keystrokes and focus while the local preview remains interactive. The regression was reproduced with the previous placement and verified with real mouse/keyboard input after the fix.
 
-**After updating:** reload **Google Glass** at `chrome://extensions`, confirm version **1.4.1**, then close and reopen affected site tabs. Existing tabs keep their previously injected JavaScript until refreshed. The compiled folder in this workspace is `D:\Projects\google\extension`.
+**After updating:** reload **Google Glass** at `chrome://extensions`, confirm the latest version **1.4.2**, then close and reopen affected site tabs. Existing tabs keep their previously injected JavaScript until refreshed. The compiled folder in this workspace is `D:\Projects\google\extension`.
 
 The installed root URL `https://translate.google.com/` was tested directly: apps, searchable languages, modal settings/save, keyboard, clear, input and real translation. See [the installed interaction review](qa/installed-interaction-review.md) and [browser capture](qa/translate-installed-interactions.png).
 

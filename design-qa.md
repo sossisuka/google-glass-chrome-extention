@@ -1,10 +1,12 @@
-# Visual and functional QA — Google Glass 1.4.1
+# Visual and functional QA — Google Glass 1.4.2
 
 final result: passed
 
 Reviewed on 2026-10-16 using Chrome for Testing through native Chrome DevTools Protocol. The [detailed functional review](qa/translate-gmail-design-qa.md) links additional evidence and reproduction commands. No actionable P0/P1/P2 finding remains in the reviewed scope.
 
 Version 1.4.1 additionally repairs installed-page interaction isolation; [reproduction and post-fix results](qa/installed-interaction-review.md). The component design is unchanged, so the reference comparisons below remain the visual baseline.
+
+Version 1.4.2 fixes separately reproduced URL-only/native-value synchronization and denied-clipboard cases. The [state/clipboard review](qa/translate-state-review.md) includes the Google homepage comparison and [real ru→en result](qa/translate-live-ru-en.png). These are functional repairs; the design baseline is unchanged.
 
 ## Source, implementation and normalization
 
@@ -37,7 +39,7 @@ The neutral account icon is intentional for the isolated signed-out profile; ins
 
 ## Verification and limits
 
-All **101 regression checks**, **6 live Google Translate checks**, **13 translator control checks** and **6 installed root-page interaction checks** passed. `npm run check` passed; production dependency audit reported zero vulnerabilities. No runtime exceptions or React console errors were observed in the automated flows. Live rating and feedback workflows were opened without submitting anything.
+All **109 regression checks**, **6 live Google Translate checks**, **15 translator control checks** and **8 installed root-page/comparison checks** passed. `npm run check` passed; production dependency audit reported zero vulnerabilities. No runtime exceptions or React console errors were observed in the automated flows. Live rating and feedback workflows were opened without submitting anything. Clipboard permission is denied before the new Copy/Share checks and read access is granted only after copying, to verify the result.
 
 Primary flows: native translation and non-common language selection, trusted mouse/keyboard, real clipboard copy/share, swap, language popovers/Escape, keyboard selection replacement, voice lifecycle, settings, independent site switch, first paint, mobile, light mode, custom background persistence, provider changes, native file chooser/URL entry and return to text mode.
 

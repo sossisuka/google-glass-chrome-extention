@@ -1,6 +1,6 @@
 # Install Google Glass — English
 
-Google Glass 1.4.1 requires Chrome 120 or newer. The extension is already built; you do not need Node.js or npm to install it.
+Google Glass 1.4.2 requires Chrome 120 or newer. The extension is already built; you do not need Node.js or npm to install it.
 
 ## Install
 
@@ -17,7 +17,7 @@ You can also download the entire repository using **Code → Download ZIP** on G
 
 Replace the files in the existing `extension` folder, keeping its path. Open `chrome://extensions` and click **Reload** on Google Glass. Version 1.4 adds access to Google Translate; enable that access if Chrome requests it. Refresh open themed sites and open a fresh new tab. Settings remain saved when the extension ID stays the same.
 
-For the installed-page button repair, confirm **1.4.1** on the extension card and close/reopen Translate, Google and Yandex tabs after reloading. A running local preview does not update JavaScript already injected into existing site tabs. If Chrome loaded another extracted copy, replace that copy or load `D:\Projects\google\extension`.
+For the latest Translate state/Copy repair, confirm **1.4.2** on the extension card and close/reopen Translate, Google and Yandex tabs after reloading. A running local preview does not update JavaScript already injected into existing site tabs. If Chrome loaded another extracted copy, replace that copy or load `D:\Projects\google\extension`. Version 1.4.2 synchronizes native URL/history and field-value changes and copies through a fallback when the site's Clipboard API is denied; no additional permissions are needed.
 
 ## Personalize
 

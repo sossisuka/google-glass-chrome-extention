@@ -1,6 +1,6 @@
 (() => {
   const html=document.documentElement;
-  let host,release,observer,timer,mounting=false,overflow,nativeOnly=false,generation=0;
+  let host,release,observer,timer,stateTimer,mounting=false,overflow,nativeOnly=false,generation=0;
   const restored=new Map(),subscribers=new Set();
   const languageRun={source:0,target:0};
   let signature='';
@@ -10,16 +10,17 @@
   function selected(side){return [...document.querySelectorAll('[role=tablist]')].filter(list=>list.querySelector('[data-language-code]'))[side==='source' ? 0 : 1]?.querySelector('[aria-selected=true][data-language-code]')?.dataset.languageCode;}
   function read(){
     const params=new URL(location.href).searchParams;
-    return {text:field()?.value || '',translation:[...document.querySelectorAll('.ryNqvb,[data-translation-result]')].map(element=>element.textContent).join(' '),source:selected('source') || params.get('sl') || 'auto',target:selected('target') || params.get('tl') || 'ru'};
+    const text=field()?.value || '';
+    return {text,translation:text.trim() ? [...document.querySelectorAll('.ryNqvb,[data-translation-result]')].map(element=>element.textContent).join(' ') : '',source:params.get('sl') || selected('source') || 'auto',target:params.get('tl') || selected('target') || 'ru'};
   }
   function notify(){const data=read();const next=JSON.stringify(data);if(next===signature)return;signature=next;for(const listener of subscribers)listener(data);}
   function hide(element){if(element===host || ['SCRIPT','STYLE','LINK'].includes(element.tagName) || restored.has(element))return;restored.set(element,{inert:element.inert,aria:element.getAttribute('aria-hidden')});element.inert=true;element.setAttribute('aria-hidden','true');}
-  function unmount(){generation++;release?.();release=undefined;host?.remove();host=undefined;mounting=false;for(const [element,old] of restored){element.inert=old.inert;if(old.aria===null)element.removeAttribute('aria-hidden');else element.setAttribute('aria-hidden',old.aria);}restored.clear();if(overflow!==undefined && document.body)document.body.style.overflow=overflow;window.HeroGoogleBoot?.finishHome();}
+  function unmount(){generation++;clearInterval(stateTimer);stateTimer=undefined;release?.();release=undefined;host?.remove();host=undefined;mounting=false;for(const [element,old] of restored){element.inert=old.inert;if(old.aria===null)element.removeAttribute('aria-hidden');else element.setAttribute('aria-hidden',old.aria);}restored.clear();if(overflow!==undefined && document.body)document.body.style.overflow=overflow;window.HeroGoogleBoot?.finishHome();}
   function reveal(action){nativeOnly=true;html.setAttribute('data-hg-translate-native','');unmount();if(action){const selector=action==='rate' ? '[jsname=IOOiDc]' : '[jsname=ryDGAb]';const expression=action==='rate' ? /Оценить.*перевод|Хороший перевод|Плохой перевод|Good translation|Rate (?:this )?translation/i : /Оставить отзыв|Отправить отзыв|Send feedback/i;const button=document.querySelector(selector) || [...document.querySelectorAll('button,[role=button]')].find(button=>expression.test(button.getAttribute('aria-label') || button.textContent) && button.getClientRects().length);button?.click();}}
   const bridge={
     read,
-    subscribe(listener){subscribers.add(listener);return()=>subscribers.delete(listener);},
-    input(text){const input=field();if(!input){reveal();return;}Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(input,text);input.dispatchEvent(new InputEvent('input',{bubbles:true,composed:true,inputType:'insertText',data:text}));if(!text)signature='';},
+    subscribe(listener){subscribers.add(listener);listener(read());return()=>subscribers.delete(listener);},
+    input(text){const input=field();if(!input){reveal();return;}Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(input,text);input.dispatchEvent(new InputEvent('input',{bubbles:true,composed:true,inputType:'insertText',data:text}));signature='';notify();},
     language(side,code){
       const run=++languageRun[side];
       const lists=[...document.querySelectorAll('[role=tablist]')].filter(list=>list.querySelector('[data-language-code]'));
@@ -33,7 +34,7 @@
         const menus=[...document.querySelectorAll('[role=listbox]')].filter(menu=>menu.querySelector('[role=option][data-language-code]'));
         const menu=menus[side==='source' ? 0 : 1];
         [...menu?.querySelectorAll('[data-language-code]') || []].find(option=>option.dataset.languageCode===code)?.click();
-        setTimeout(()=>{if(run!==languageRun[side] || !allowed() || selected(side)===code)return;const data=read();const url=new URL(location.href);url.searchParams.set(side==='source' ? 'sl' : 'tl',code);if(data.text)url.searchParams.set('text',data.text);location.assign(url.href);},250);
+        setTimeout(()=>{const key=side==='source' ? 'sl' : 'tl';const url=new URL(location.href);if(run!==languageRun[side] || !allowed() || selected(side)===code || url.searchParams.get(key)===code)return;const data=read();url.searchParams.set(key,code);if(data.text)url.searchParams.set('text',data.text);location.assign(url.href);},250);
       },60);
     },
     swap(){document.querySelector('[jsname=dnDxad],[data-translation-swap]')?.click();},
@@ -49,13 +50,17 @@
     const styles=['ui.css','translate.css'].map(file=>new Promise((resolve,reject)=>{const link=document.createElement('link');link.rel='stylesheet';link.href=chrome.runtime.getURL(file);link.onload=resolve;link.onerror=()=>reject(Error(`Could not load ${file}`));shadow.append(link);}));
     // Keep our controls outside Google's body-level event controllers and inert states.
     const container=document.createElement('div');shadow.append(container);overflow=document.body.style.overflow;document.body.style.overflow='hidden';document.documentElement.append(host);[...document.body.children].forEach(hide);
-    try{await Promise.all(styles);if(run!==generation || !allowed())return;const cleanup=await window.TranslateGlass.mount(container,{assetBase:chrome.runtime.getURL(''),bridge});if(run!==generation || !allowed()){cleanup();return;}release=cleanup;mounting=false;window.HeroGoogleBoot.finishHome();}
+    try{await Promise.all(styles);if(run!==generation || !allowed())return;const cleanup=await window.TranslateGlass.mount(container,{assetBase:chrome.runtime.getURL(''),bridge});if(run!==generation || !allowed()){cleanup();return;}release=cleanup;mounting=false;stateTimer=setInterval(notify,250);window.HeroGoogleBoot.finishHome();}
     catch(error){console.warn('Google Glass uses the original Translate interface:',error.message);reveal();}
   }
   function sync(){if(allowed())mount();else if(host)unmount();notify();}
   observer=new MutationObserver(records=>{if(host)for(const record of records)for(const node of record.addedNodes)if(node instanceof HTMLElement && node.parentElement===document.body)hide(node);if(!timer)timer=setTimeout(()=>{timer=undefined;sync();},60);});
   observer.observe(html,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['aria-selected','aria-current','data-language-code']});
   window.addEventListener('hg-route',sync);
+  // Query-string and textarea.value changes need not produce DOM mutations.
+  for(const name of ['popstate','pageshow','hashchange'])window.addEventListener(name,sync);
+  window.navigation?.addEventListener('currententrychange',sync);
+  document.addEventListener('input',event=>{if(event.target===field())notify();},true);
   let previousEnabled=true;
   chrome.storage.onChanged.addListener((changes,area)=>{if(area!=='local' || !changes.settings)return;const next=(changes.settings.newValue?.sites?.translate ?? changes.settings.newValue?.translateEnabled)!==false;if(next!==previousEnabled){nativeOnly=false;html.removeAttribute('data-hg-translate-native');}previousEnabled=next;sync();});
   setTimeout(()=>{if(allowed() && !field()){nativeOnly=true;html.setAttribute('data-hg-translate-native','');window.HeroGoogleBoot.finishHome();}},8000);

@@ -2,6 +2,8 @@
 
 final result: passed
 
+This records the 1.4.1 body-isolation repair. The later [1.4.2 state/clipboard review](translate-state-review.md) covers the separately reproduced URL-only updates and Copy denial, with live comparison against the Google homepage.
+
 The user reported that the local preview worked while controls on real sites, including `https://translate.google.com/`, did not. A clean isolated Chrome profile accepted ordinary clicks, so this does not establish the exact state of the user's existing browser tab. Investigation identified a shared structural weakness: custom homepage hosts were children of the native page body, exposing them to its capture handlers, inherited pointer/disabled states and native body controllers.
 
 ## Reproduction and fix
