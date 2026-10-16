@@ -22,7 +22,8 @@
     const shadow=host.attachShadow({mode:'open'});
     const styles=['ui.css','yandex.css'].map(file=>new Promise((resolve,reject)=>{const link=document.createElement('link');link.rel='stylesheet';link.href=chrome.runtime.getURL(file);link.onload=resolve;link.onerror=()=>reject(Error(`Could not load ${file}`));shadow.append(link);}));
     const container=document.createElement('div');shadow.append(container);
-    overflow=document.body.style.overflow;document.body.style.overflow='hidden';document.body.append(host);[...document.body.children].forEach(hide);
+    // Isolate controls from native body-level event handlers and disabled states.
+    overflow=document.body.style.overflow;document.body.style.overflow='hidden';document.documentElement.append(host);[...document.body.children].forEach(hide);
     observer=new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes)if(node instanceof HTMLElement)hide(node);});observer.observe(document.body,{childList:true});
     try{
       await Promise.all(styles);if(run!==generation || !allowed())return;

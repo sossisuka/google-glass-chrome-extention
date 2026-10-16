@@ -1,4 +1,4 @@
-# Google Glass 1.4
+# Google Glass 1.4.1
 
 A ready-to-load Chrome Manifest V3 extension based on the supplied Google, Yandex, Translate, search-results and selector references. Includes HeroUI / NextUI controls, light and dark themes, uploaded backgrounds, Google AI Mode, YouTube and Gmail styling.
 
@@ -7,6 +7,14 @@ A ready-to-load Chrome Manifest V3 extension based on the supplied Google, Yande
 To install from GitHub, choose **Code → Download ZIP** and extract it, or clone this repository. Load its **`extension`** folder in Chrome. The compiled extension and all required assets are included.
 
 The ZIP contains the ready-to-load extension and guides. Editable source, development scripts and QA evidence are available in the full project workspace.
+
+## Installed-page interaction repair — 1.4.1
+
+The Google, Translate and Yandex interfaces now mount outside the native page body. This prevents body-level capture handlers and inherited `inert` states from swallowing clicks, keystrokes and focus while the local preview remains interactive. The regression was reproduced with the previous placement and verified with real mouse/keyboard input after the fix.
+
+**After updating:** reload **Google Glass** at `chrome://extensions`, confirm version **1.4.1**, then close and reopen affected site tabs. Existing tabs keep their previously injected JavaScript until refreshed. The compiled folder in this workspace is `D:\Projects\google\extension`.
+
+The installed root URL `https://translate.google.com/` was tested directly: apps, searchable languages, modal settings/save, keyboard, clear, input and real translation. See [the installed interaction review](qa/installed-interaction-review.md) and [browser capture](qa/translate-installed-interactions.png).
 
 ## Translate and Gmail repairs — new in 1.4
 

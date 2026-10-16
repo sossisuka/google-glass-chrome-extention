@@ -9,6 +9,7 @@
     "Edit and delete shortcut",
     "Russian / English settings and mobile layout without horizontal overflow",
     "Content script mounts an isolated shadow UI on the Google homepage",
+    "Installed Google controls receive trusted pointer input despite an inert native body and native capture handlers",
     "Homepage toggle restores native Google accessibility and scroll state",
     "Search results and Google Images retain their native UI",
     "Toolbar popup settings update already open extension pages",

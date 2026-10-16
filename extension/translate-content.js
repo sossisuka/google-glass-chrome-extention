@@ -47,7 +47,8 @@
     host=document.createElement('div');host.id='hero-translate-root';host.style.cssText='position:fixed;inset:0;z-index:2147483600;overflow:auto;';
     const shadow=host.attachShadow({mode:'open'});
     const styles=['ui.css','translate.css'].map(file=>new Promise((resolve,reject)=>{const link=document.createElement('link');link.rel='stylesheet';link.href=chrome.runtime.getURL(file);link.onload=resolve;link.onerror=()=>reject(Error(`Could not load ${file}`));shadow.append(link);}));
-    const container=document.createElement('div');shadow.append(container);overflow=document.body.style.overflow;document.body.style.overflow='hidden';document.body.append(host);[...document.body.children].forEach(hide);
+    // Keep our controls outside Google's body-level event controllers and inert states.
+    const container=document.createElement('div');shadow.append(container);overflow=document.body.style.overflow;document.body.style.overflow='hidden';document.documentElement.append(host);[...document.body.children].forEach(hide);
     try{await Promise.all(styles);if(run!==generation || !allowed())return;const cleanup=await window.TranslateGlass.mount(container,{assetBase:chrome.runtime.getURL(''),bridge});if(run!==generation || !allowed()){cleanup();return;}release=cleanup;mounting=false;window.HeroGoogleBoot.finishHome();}
     catch(error){console.warn('Google Glass uses the original Translate interface:',error.message);reveal();}
   }

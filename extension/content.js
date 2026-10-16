@@ -32,7 +32,8 @@
     shadow.append(controlsStyles);
     previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    document.body.append(host);
+    // Body-level native event controllers and inert states must not disable our UI.
+    document.documentElement.append(host);
     [...document.body.children].forEach(hideNative);
     observer = new MutationObserver(records => {
       for (const record of records) for (const node of record.addedNodes) {

@@ -92,6 +92,14 @@ try {
   assert.equal(await google.evaluate("[...document.querySelector('#hero-google-root').shadowRoot.querySelectorAll('img')].every(image=>image.complete && image.naturalWidth>0)"),true);
   await capture(google,'google-homepage');
   pass('Content script mounts an isolated shadow UI on the Google homepage');
+  await google.send('Page.bringToFront');
+  await google.evaluate("document.body.inert=true;document.body.addEventListener('pointerdown',event=>{event.preventDefault();event.stopImmediatePropagation()},true)");
+  const appsPoint=await google.evaluate("(()=>{const r=document.querySelector('#hero-google-root').shadowRoot.querySelector('[data-action=apps]').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()");
+  await google.send('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...appsPoint});
+  await google.send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...appsPoint});
+  await ready(google,"document.querySelector('#hero-google-root').shadowRoot.querySelector('#apps-menu').hidden===false");
+  await google.evaluate("document.body.inert=false;document.querySelector('#hero-google-root').shadowRoot.querySelector('#apps-menu [data-action=apps]').click()");
+  pass('Installed Google controls receive trusted pointer input despite an inert native body and native capture handlers');
   await google.evaluate("const native=document.querySelector('#native-google');document.body.append(native); const added=document.createElement('section');added.id='native-added';document.body.append(added)");
   await ready(google,"document.querySelector('#native-added').inert");
   await page.evaluate("(async()=>{const {settings}=await chrome.storage.local.get('settings'); await chrome.storage.local.set({settings:{...settings,homepageEnabled:false}})})()");

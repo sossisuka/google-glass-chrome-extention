@@ -8,6 +8,7 @@
     "HeroUI control panel switches New Tab between Google and Yandex and updates light mode",
     "Yandex settings preserve multiple edits, nested selector Escape and an uploaded background across reload and New Tab",
     "Opt-in Yandex weather requests hourly data and renders the current hour plus four following hours",
+    "Installed Yandex settings receive trusted pointer/keyboard input outside an inert native body and capture handlers",
     "Native Yandex homepage is concealed until ready; site toggle and search navigation restore original accessibility",
     "Search submits the real Yandex text parameter with Unicode and punctuation preserved",
     "No runtime exceptions or React console errors during Yandex flows"

@@ -140,6 +140,18 @@ try{
   const paintSamples=await native.evaluate('window.paintSamples');
   assert(paintSamples.every(sample=>sample.nativeHidden || sample.ready),JSON.stringify(paintSamples));
   await writeFile('qa/yandex-first-paint.json',JSON.stringify(paintSamples,null,2)+'\n');
+  await native.send('Page.bringToFront');
+  await native.send('Emulation.setDeviceMetricsOverride',{width:1568,height:882,deviceScaleFactor:1,mobile:false});
+  await native.evaluate("document.body.inert=true;document.body.addEventListener('pointerdown',event=>{event.preventDefault();event.stopImmediatePropagation()},true)");
+  const settingsPoint=await native.evaluate("(()=>{const el=document.querySelector('#hero-yandex-root').shadowRoot.querySelector('.yx-footer-settings');el.scrollIntoView({block:'nearest'});const r=el.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()");
+  await native.send('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...settingsPoint});
+  await native.send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...settingsPoint});
+  await until(()=>native.evaluate("Boolean(document.querySelector('#hero-yandex-root').shadowRoot.querySelector('#settings-form'))"));
+  await native.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+  await native.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+  await until(()=>native.evaluate("!document.querySelector('#hero-yandex-root').shadowRoot.querySelector('#settings-form')"));
+  await native.evaluate('document.body.inert=false');
+  pass('Installed Yandex settings receive trusted pointer/keyboard input outside an inert native body and capture handlers');
   await popup.evaluate("document.querySelector('[data-key=sites][role=tab]').click()");
   await until(()=>popup.evaluate("Boolean(document.querySelector('input[name=site-yandex]'))"));
   await popup.evaluate("document.querySelector('input[name=site-yandex]').click()");

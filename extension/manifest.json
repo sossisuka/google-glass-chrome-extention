@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Google Glass",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "HeroUI Google, Yandex and Translate pages. AI Mode, YouTube and Gmail themes, custom backgrounds and light mode.",
   "minimum_chrome_version": "120",
   "permissions": [

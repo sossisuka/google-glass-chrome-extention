@@ -1,0 +1,12 @@
+{
+  "url": "https://translate.google.com/",
+  "checks": [
+    "Installed root URL receives real pointer input and opens/closes the apps menu",
+    "Installed controls remain clickable when the native body is inert and intercepts pointer/keyboard events",
+    "Installed searchable language menu accepts typing and a trusted option click",
+    "Installed HeroUI settings accept real pointer input and save the selected theme",
+    "Installed keyboard, clear and source input still work after saving a modal",
+    "No installed-page runtime exceptions"
+  ],
+  "errors": []
+}
