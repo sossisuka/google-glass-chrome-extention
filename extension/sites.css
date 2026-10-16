@@ -85,13 +85,19 @@ html[data-hg-gmail] body{font-family:HGInter,Inter,Arial,sans-serif !important;}
 html[data-hg-gmail] :is(.zA,.bog,.yW,.hP,.a3s,.gD,.TN,.T-I){font-family:HGInter,Inter,Arial,sans-serif !important;}
 html[data-hg-gmail] :is(.nH,.bkK,.bq9,.aAU,.aeJ,.aKh,.aeH,.aBq,.aBu,.aeG,.aeN,.bhZ,.bAw,.bkL,.bAt,.aeB,.aeI,.aKB,.aKk){background:transparent !important;color:var(--hg-text) !important;}
 html[data-hg-gmail] :is(.gb_Ea,.gb_Fa,#gb,[role=banner]){background:var(--hg-bg) !important;color:var(--hg-text) !important;border-color:var(--hg-border) !important;}
-html[data-hg-gmail] .G-atb{background:transparent !important;color:var(--hg-muted) !important;border-color:var(--hg-border) !important;}
+html[data-hg-gmail] .G-atb{background:var(--hg-panel) !important;color:var(--hg-muted) !important;border-color:var(--hg-border) !important;}
+/* Gmail adds white sticky layers while scrolling. Cover every toolbar layer. */
+html[data-hg-gmail] .G-atb,html[data-hg-gmail] .G-atb::before,html[data-hg-gmail] .G-atb::after{background-color:var(--hg-panel) !important;background-image:none !important;}
+html[data-hg-gmail] .G-atb::before,html[data-hg-gmail] .G-atb::after{box-shadow:none !important;}
+html[data-hg-gmail] :is(.aqK,.aqL):has(.G-atb){background:var(--hg-panel) !important;}
+html[data-hg-gmail] :is(#gb,[role=banner]) :is(div,a):is(:has(>img[src*="logo_gmail_lockup"]),:has(>a>img[src*="logo_gmail_lockup"])){background:transparent !important;border:0 !important;border-radius:0 !important;box-shadow:none !important;outline:0 !important;}
 html[data-hg-gmail] :is(#gb,[role=banner]) img[src*="logo_gmail_lockup"]{content:url('chrome-extension://__MSG_@@extension_id__/assets/logo_gmail_lockup_dark.png') !important;object-fit:contain;}
 html[data-hg-gmail][data-hg-mode=light] :is(#gb,[role=banner]) img[src*="logo_gmail_lockup"]{content:url('chrome-extension://__MSG_@@extension_id__/assets/logo_gmail_lockup_light.png') !important;}
 html[data-hg-gmail] :is([role=main],.AO:has(.a3s),.aeF:has(.a3s)){background:var(--hg-panel) !important;border:1px solid var(--hg-border) !important;border-radius:20px !important;box-shadow:inset 0 1px 1px #ffffff04;}
 html[data-hg-gmail] :is([role=navigation],[role=complementary]){background:var(--hg-bg) !important;border:0 !important;border-radius:0 !important;box-shadow:none !important;color:var(--hg-text) !important;}
 html[data-hg-gmail] :is(.aia,.aeF .AO,.AO .aeF,[role=main] .AO,[role=main] .aeF){border:0 !important;border-radius:0 !important;box-shadow:none !important;background:transparent !important;}
-html[data-hg-gmail] :is(.z0>.L3,.z0>[role=button]){background:var(--hg-gmail-compose) !important;color:var(--hg-text) !important;border:1px solid #8ec4ff25 !important;border-radius:19px !important;box-shadow:inset 0 1px 12px #9acfff20,0 4px 20px #2168c015 !important;}
+html[data-hg-gmail] :is(.z0>.L3,.z0>[role=button]){background:linear-gradient(155deg,#5395dd 0%,#355a91 40%,#1f324e 68%,#1f324e 100%) !important;color:#f4f7ff !important;border:1px solid #9bceff40 !important;border-radius:19px !important;box-shadow:inset 0 1px 2px #c2e2ff44,inset 0 0 18px #8dc4ff0d,0 5px 24px #1c6bc01a !important;}
+html[data-hg-gmail][data-hg-mode=light] :is(.z0>.L3,.z0>[role=button]){background:linear-gradient(135deg,#dcecff,#a9cdf6) !important;color:#203b5c !important;}
 html[data-hg-gmail] :is(.TO,.TN){background:transparent !important;color:var(--hg-text) !important;border-radius:999px !important;}
 html[data-hg-gmail] :is(.TO.nZ,.TO:hover,.nZ>.TN){background:var(--hg-elevated) !important;color:var(--hg-text) !important;}
 html[data-hg-gmail] :is(.TK .TO,.aim,.TN a,.aio,.bsU,.CJ,.n3,.qj){color:var(--hg-text) !important;}
@@ -104,11 +110,11 @@ html[data-hg-gmail] :is(.y2,.xW,.g3,.fY,.afn,.amZ,.Dj,.ts,.go,.g2,.afn span){col
 html[data-hg-gmail] .zE :is(.yW,.bog){font-weight:600 !important;}
 html[data-hg-gmail] :is(.aKz,.aRz,.aRs,.aRq,.aRv){background:transparent !important;color:var(--hg-muted) !important;border-color:var(--hg-border) !important;}
 html[data-hg-gmail] :is(.aRz.J-KU,.aRz[aria-selected=true]){color:var(--hg-gmail-blue) !important;border-bottom:2px solid var(--hg-gmail-blue) !important;}
-html[data-hg-gmail] :is([role=search],.gb_je,.gb_ue){background:var(--hg-elevated) !important;border:1px solid var(--hg-gmail-edge) !important;border-radius:20px !important;box-shadow:inset 0 1px 12px #ffffff04 !important;color:var(--hg-text) !important;}
+html[data-hg-gmail] [role=search]{background:linear-gradient(135deg,var(--hg-elevated),var(--hg-panel)) !important;border:1px solid var(--hg-gmail-edge) !important;border-radius:20px !important;box-shadow:inset 0 1px 12px #ffffff04 !important;color:var(--hg-text) !important;}
 html[data-hg-gmail] :is(input,textarea,[contenteditable=true]){color:var(--hg-text) !important;background-color:transparent !important;caret-color:var(--hg-gmail-blue);}
 html[data-hg-gmail] :is(select,option,[role=menu],[role=menuitem],.r3,.r4){background:var(--hg-panel) !important;color:var(--hg-text) !important;border-color:var(--hg-gmail-edge) !important;}
 html[data-hg-gmail] :is(input,textarea)::placeholder{color:var(--hg-muted) !important;opacity:1;}
-html[data-hg-gmail] :is([role=search],.Am,.editable):focus-within{outline:1px solid var(--hg-gmail-blue) !important;outline-offset:2px;}
+html[data-hg-gmail] :is([role=search],.Am,.editable):focus-within{outline:none !important;box-shadow:none !important;}
 html[data-hg-gmail] :is([role=dialog],.AD,.aSs,.J-M,.bAp,.bAo,.aZ6){border:1px solid var(--hg-gmail-edge) !important;background:var(--hg-panel) !important;color:var(--hg-text) !important;border-radius:20px !important;box-shadow:0 20px 65px #0004;}
 html[data-hg-gmail] :is(.aDh,.aDj,.aDg,.J-M .J-N,.aXj,.aXk,.aXl,.aYg,.aYw,.aYz,.aC3,.gE,.gH,.a3s,.ii,.adn,.hx){background:var(--hg-panel) !important;color:var(--hg-text) !important;border-color:var(--hg-border) !important;}
 html[data-hg-gmail] :is(.AD,.aSs,[role=dialog]) :is(.aYF,.Hp,.aoD){background:var(--hg-elevated) !important;color:var(--hg-text) !important;border-color:var(--hg-border) !important;}
@@ -126,8 +132,11 @@ html[data-hg-gmail] :is(.aVj,.aV2){color:var(--hg-muted) !important;}
 html[data-hg-gmail] .T-I{border-radius:999px !important;background:transparent !important;color:var(--hg-text) !important;border-color:var(--hg-gmail-edge) !important;box-shadow:none !important;}
 html[data-hg-gmail] :is(.T-I-atl,.T-I-KE){background:var(--hg-gmail-compose) !important;color:var(--hg-text) !important;border:1px solid var(--hg-gmail-edge) !important;}
 html[data-hg-gmail] :is(.T-I:hover,.J-N:hover,.J-N-JT){background:var(--hg-elevated) !important;}
-html[data-hg-gmail][data-hg-mode=dark] :is(.T-I-J3,.G-asx,.asa,.asl,.asor,.asJ,.asH,.aos,.aoq,.aDk,.aD6,.aD4,.brq,.bsf,.bjy,.bjb,.bji,.bje,.aYj,.aYk,.aXw,.aXy,.aXz){filter:brightness(0) invert(.82) !important;opacity:.85;}
-html[data-hg-gmail][data-hg-mode=dark] :is(.T-Jo:not(.T-Jo-Jp):not([aria-checked=true]),.T-KT:not(.T-KT-Jp):not(.active)){filter:brightness(0) invert(.82) !important;opacity:.85 !important;}
+html[data-hg-gmail][data-hg-mode=dark] :is(.T-I-J3,.G-asx,.asa,.asl,.asor,.asJ,.asH,.aos,.aoq,.aDk,.aD6,.aD4,.brq,.bsf,.bjy,.bjb,.bji,.bje,.aYj,.aYk,.aXw,.aXy,.aXz){filter:brightness(0) saturate(100%) invert(70%) sepia(9%) saturate(409%) hue-rotate(179deg) !important;opacity:1 !important;}
+html[data-hg-gmail][data-hg-mode=dark] :is(.T-Jo:not(.T-Jo-Jp):not([aria-checked=true]),.T-KT:not(.T-KT-Jp):not(.active)){filter:brightness(0) saturate(100%) invert(70%) sepia(9%) saturate(409%) hue-rotate(179deg) !important;opacity:1 !important;}
+html[data-hg-gmail][data-hg-mode=dark] :is(.G-atb,.TO,.aRz,#gb) svg{color:var(--hg-muted) !important;opacity:1 !important;}
+html[data-hg-gmail][data-hg-mode=dark] :is(.z0>.L3,.z0>[role=button]) svg{color:#f4f7ff !important;filter:none !important;opacity:1 !important;}
+html[data-hg-gmail][data-hg-mode=dark] :is(.z0>.L3,.z0>[role=button]) .T-I-J3{filter:brightness(0) invert(.97) !important;opacity:1 !important;}
 html[data-hg-gmail] :is([role=banner],[role=search]) svg:not([aria-label]){color:var(--hg-text) !important;}
 html[data-hg-gmail][data-hg-mode=dark] :is(#gb,.G-atb,.TO,.aRz,.AD,[role=menu]) svg :is([fill="#000" i],[fill="#000000" i],[fill="black" i],[fill="#202124" i]){fill:currentColor !important;}
 html[data-hg-gmail] [role=button]:focus-visible{outline:2px solid var(--hg-gmail-blue) !important;outline-offset:2px;}

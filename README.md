@@ -1,6 +1,6 @@
-# Google Glass 1.3
+# Google Glass 1.4
 
-A ready-to-load Chrome Manifest V3 extension based on the supplied Google and Yandex homepage references, search-results and selector references. Includes HeroUI / NextUI controls, light and dark themes, uploaded backgrounds, Google AI Mode, YouTube and Gmail styling.
+A ready-to-load Chrome Manifest V3 extension based on the supplied Google, Yandex, Translate, search-results and selector references. Includes HeroUI / NextUI controls, light and dark themes, uploaded backgrounds, Google AI Mode, YouTube and Gmail styling.
 
 **Install:** [English](INSTALL.en.md) · [Русский](INSTALL.ru.md). Extract `Google-Glass.zip`, open `chrome://extensions`, enable Developer mode and load the inner `extension` folder. The archive contains compiled files; installation requires no Node.js or build step.
 
@@ -8,7 +8,19 @@ To install from GitHub, choose **Code → Download ZIP** and extract it, or clon
 
 The ZIP contains the ready-to-load extension and guides. Editable source, development scripts and QA evidence are available in the full project workspace.
 
-## Yandex homepage — new in 1.3
+## Translate and Gmail repairs — new in 1.4
+
+The Google Translate page follows the supplied reference: measured two-pane layout, glass gradients, Google-style icons, purple-blue Gemini mark and an Earth background. The side slogans are removed. It supports desktop/mobile layouts, dark/light/system themes, shared background uploads, searchable language selection, a keyboard, speech input and copying/sharing real translation results.
+
+- **Sites → Translate** controls the theme on `translate.google.com` and `translate.google.ru`. It starts enabled, like the Google theme.
+- **Appearance → New tab homepage → Translate** makes Translate the New Tab page. **Google remains the default**, and existing homepage preferences are preserved.
+- On the actual Google Translate site, source text and language choices are forwarded to its native engine, and the real result appears in the HeroUI pane. Document, image and website modes use Google's existing workflows.
+- New Tab and local previews open the official Translate service when you press **Translate** or Ctrl/Cmd+Enter. Translation text is not saved by the extension. Google processes translations through its own service.
+- Gmail's sticky toolbar stays dark while scrolling, including native pseudo-element backgrounds. The logo no longer receives a search-field outline. Muted native icons remain visible and gold stars keep their color. Compose uses a reference-sampled blue gradient with a light pencil icon.
+
+Preview: **http://127.0.0.1:4173/translate.html** after `npm.cmd run dev`. Reload the extension in `chrome://extensions`, allow the added Translate site access if requested, then refresh existing Gmail and Translate tabs.
+
+## Yandex homepage — added in 1.3
 
 Choose **Appearance → New tab homepage → Yandex** in the extension popup, or visit a supported Yandex homepage. Google remains the default for New Tab. The separate **Sites → Yandex** switch controls restyling on Yandex websites.
 
@@ -37,6 +49,27 @@ The following screenshots come from the project's browser QA captures.
 <img src="qa/yandex-settings-mobile.png" width="320" alt="Yandex settings with theme, homepage provider and background upload controls">
 
 </details>
+
+### Google Translate
+
+| Dark | Light |
+| --- | --- |
+| ![Google Translate with two glass panes and the Earth background](qa/translate-desktop.png) | ![Google Translate in light mode](qa/translate-light.png) |
+
+<details>
+<summary>Translate on mobile and its live translation result</summary>
+
+<img src="qa/translate-mobile.png" width="320" alt="Responsive Google Translate interface">
+
+![Real translation returned by Google's native engine](qa/translate-live-result.png)
+
+</details>
+
+### Gmail scrolling repair
+
+This anonymized native-layout fixture shows the dark toolbar after scrolling, the unframed Gmail logo, readable icons and corrected Compose gradient. The user's private inbox capture is excluded from the repository.
+
+![Gmail toolbar stays dark after scrolling](qa/gmail-scroll-dark.png)
 
 ### Dark and light themes
 
@@ -109,6 +142,8 @@ New Tab remains controlled by the extension while it is enabled, regardless of t
 
 Supported Google country domains are listed in `extension/manifest.json`. Themes cover `/`, `/webhp`, `/search`, `/ai` and `/aimode`, plus `youtube.com` / `www.youtube.com` and `mail.google.com`. The Yandex theme covers supported homepage roots only. Consent and CAPTCHA routes are excluded. Specialized widgets may keep some native styles as these sites change their markup.
 
+Translate uses a separate site toggle. Its custom text interface covers the root page on `translate.google.com` / `translate.google.ru`, with native Google document/image/site workflows retained. It does not theme Google consent pages or CAPTCHA routes.
+
 The extension uses `storage`, content-script access to those sites, and the two Open-Meteo hosts for optional weather. It does not request cookies, history, geolocation, identity or access to arbitrary sites. There is no analytics or query logging. Backgrounds, settings, shortcuts, avatar URL and weather cache stay in local extension storage. Avatar images are loaded from the URL already exposed by Google. The selected theme name is also cached in supported sites' local storage to select the initial page background. Weather sends the entered city and IP address to Open-Meteo only when enabled. Chrome's optional speech recognition may process audio through its own service.
 
 ## Source and development
@@ -123,6 +158,9 @@ extension/              Load this directory in Chrome
   yandex-ui.js          Bundled HeroUI Yandex homepage
   yandex-content.js     Isolated native Yandex homepage integration
   yandex.html           Yandex reference preview
+  translate-ui.js       Bundled HeroUI Google Translate interface
+  translate-content.js Bridge to Google's native translation engine
+  translate.html        Translate reference preview / New Tab option
   sites.css             YouTube / Gmail themes
   gmail-content.js      Local contrast adaptation for Gmail UI and rendered mail
   youtube-content.js    Native YouTube feed and navigation integration
@@ -158,6 +196,8 @@ Run `node scripts/gmail-theme-test.mjs` for plain and formatted email contrast, 
 
 `npm run test:yandex` checks Yandex search, service assets, keyboard, shortcut editing, mobile dialogs, provider switching, shared background upload, nested selectors, hourly weather and native-page restoration. See [the Yandex reference comparison and review](qa/yandex-design-qa.md).
 
+`npm run test:translate` checks the Translate layout, keyboard, language search/swap, input limit, provider settings, backgrounds, first paint and native integration with deterministic fixtures. `npm run test:gmail-scroll` covers the exact supplied logo DOM, scrolling toolbar layers, Compose gradient and native icons. Both are included in the full test suite. `npm run test:translate-live` separately verifies real text translation, language changes, trusted mouse clicks, copy/share, swapping, native rating/feedback, document/image file choosers and website entry on current public Google Translate. Voice start/stop, results and error handling use controlled SpeechRecognition callbacks; no microphone audio is recorded by QA. See [the 1.4 review](qa/translate-gmail-design-qa.md).
+
 `node scripts/live-youtube-check.mjs` checks current public YouTube video components, video menus, the Share modal and the signed-out header dropdown. It uses a public channel's components on a home-route test surface, without a signed-in profile. Evidence is saved under `qa/youtube-fixed-live-*` and `qa/youtube-live-test-results.json`.
 
 ## Credits
@@ -167,3 +207,5 @@ HeroUI 2.8.10 and React 18 are bundled locally; MIT notices are in `extension/HE
 This is an independent project, unaffiliated with Google or HeroUI.
 
 Yandex product marks belong to Yandex. Bundled service asset URLs are recorded in `extension/assets/yandex-sources.json`; the wordmark is the 2021 Cyrillic artwork attributed to Yandex. News thumbnails are illustrative Unsplash photographs. Particle-wave and Plus illustrations were generated for this project; see [asset prompts](qa/yandex-asset-prompts.md). The project is also unaffiliated with Yandex.
+
+Translate uses Google's product mark, the existing official Google wordmark, the Simple Icons Gemini silhouette and Material Symbols / Tabler icons. Material Symbols' Apache 2.0 license is included in `extension/TRANSLATE-ICONS-LICENSE.txt`. The language catalogue was read from public Google Translate on 2026-10-16. Background asset and generation prompt: [Translate asset notes](qa/translate-asset-prompts.md).

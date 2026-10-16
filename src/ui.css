@@ -6,6 +6,7 @@
 @source "./selectors.jsx";
 @source "./search-selectors.jsx";
 @source "./yandex.jsx";
+@source "./translate.jsx";
 @source "./controls.jsx";
 @source "./results.jsx";
 @source "./youtube.jsx";

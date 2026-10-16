@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "Translate reference layout renders two panes, four method cards and all bundled imagery without side copy",
+    "Translate stacks its panes and keeps every control within a mobile viewport",
+    "Source input, counter and on-screen keyboard work without an active outline",
+    "Searchable language chooser supports 250 native language codes, selection, Escape and swapping",
+    "Text entry enforces the 5,000-character limit and clears cleanly",
+    "Shared HeroUI settings, Google/Translate provider switching, light mode and background upload persist across reload",
+    "Native bridge forwards input and real output while the original page stays concealed until ready",
+    "Independent Translate switch and document-mode navigation restore native controls, text and accessibility",
+    "Standalone and New Tab text launches real Google Translate with Unicode and selected languages preserved",
+    "No runtime exceptions or React console errors during Translate flows"
+  ],
+  "errors": []
+}

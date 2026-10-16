@@ -1,0 +1,11 @@
+{
+  "source": "Anonymized native layout with the supplied logo DOM and a sticky toolbar; no personal inbox content",
+  "checks": [
+    "Exact Gmail logo container has no capsule, border or shadow while the real search field keeps its glass surface",
+    "Compose uses the reference’s bright upper-left blue to dark lower-right gradient and a light pencil icon",
+    "Native sprite icons remain visible and muted; selected gold stars retain their color",
+    "Scrolled sticky toolbar and both pseudo layers stay dark at the top of the real scroll container",
+    "Light mode and disabling Gmail restore original surfaces and styles without adapter exceptions"
+  ],
+  "errors": []
+}

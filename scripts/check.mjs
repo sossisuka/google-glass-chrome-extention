@@ -17,6 +17,9 @@ assert(manifest.content_scripts.some(item=>item.matches.includes('https://mail.g
 assert(manifest.web_accessible_resources.some(item=>item.resources.includes('youtube.css')));
 assert(manifest.content_scripts.some(item=>item.matches.includes('https://ya.ru/*') && item.js.includes('yandex-content.js') && item.js.includes('yandex-ui.js')));
 assert(manifest.web_accessible_resources.some(item=>item.resources.includes('yandex.css')));
+assert(manifest.content_scripts.some(item=>item.matches.includes('https://translate.google.com/*') && item.js.includes('translate-ui.js') && item.js.includes('translate-content.js')));
+assert(manifest.web_accessible_resources.some(item=>item.resources.includes('translate.css')));
+assert.equal(manifest.version,JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8')).version);
 await Promise.all(declared.map(file => access(new URL(file,directory))));
 for (const file of await readdir(directory)) {
   if (file.endsWith('.js')) execFileSync(process.execPath,['--check',new URL(file,directory).pathname.replace(/^\/(\w:)/,'$1')]);
@@ -34,6 +37,10 @@ for (const image of ['background.png','orbit.png','google.png','youtube.svg','gm
 for (const code of Object.keys(countries)) await access(new URL(`assets/flags/${code.toLowerCase()}.svg`,directory));
 for (const image of ['results-background.png','glusk-collage.png','results-glusk.png','results-wiki.png','results-niva.png','results-maps.png']) await access(new URL(`assets/${image}`,directory));
 for (const image of ['yandex-background.png','yandex-plus.png','yandex-wordmark.svg','yandex-mark.png','yandex-maps.svg','yandex-market.png','yandex-mail.ico','yandex-disk.svg','yandex-music.svg','yandex-kinopoisk.svg','yandex-browser.svg','yandex-weather.svg','yandex-news-tech.jpg','yandex-news-world.jpg','yandex-news-nature.jpg','yandex-news-culture.jpg']) await access(new URL(`assets/${image}`,directory));
+for(const image of ['translate-background.png','translate-mark.png','translate-gemini.svg','translate-languages.json'])await access(new URL(`assets/${image}`,directory));
+assert(JSON.parse(await readFile(new URL('assets/translate-languages.json',directory),'utf8')).length>=200);
+for(const icon of ['language','file-text','link','photo','camera','copy','thumbs-up-down','share','arrows-exchange','volume','external-link','message-report','arrow-up-right','microphone'])await access(new URL(`assets/icons/translate-${icon}.svg`,directory));
+await access(new URL('TRANSLATE-ICONS-LICENSE.txt',directory));
 for (const file of ['ui.js','ui.css','HEROUI-LICENSE.txt','ui.js.LEGAL.txt','results.css']) await access(new URL(file,directory));
 for (const file of ['assets/fonts/Inter.ttf','assets/fonts/OFL.txt','assets/flags/LICENSE.txt']) await access(new URL(file,directory));
 console.log('PASS: Manifest V3, bundled resources, script syntax, and CSP-compatible HTML.');

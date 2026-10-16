@@ -10,7 +10,7 @@ import json
 root = Path(sys.argv[1]).resolve()
 target = root / 'Google-Glass.zip'
 files = sorted((root / 'extension').rglob('*'))
-files += [root / name for name in ['README.md', 'INSTALL.en.md', 'INSTALL.ru.md', 'qa/asset-prompts.md', 'qa/results-asset-prompts.md', 'qa/yandex-asset-prompts.md']]
+files += [root / name for name in ['README.md', 'INSTALL.en.md', 'INSTALL.ru.md', 'qa/asset-prompts.md', 'qa/results-asset-prompts.md', 'qa/yandex-asset-prompts.md', 'qa/translate-asset-prompts.md']]
 images = sorted(set(re.findall(r'qa/[a-zA-Z0-9_.-]+[.]png', (root / 'README.md').read_text(encoding='utf-8'))))
 files += [root / name for name in images]
 with ZipFile(target, 'w', ZIP_DEFLATED) as archive:

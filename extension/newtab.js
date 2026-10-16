@@ -17,14 +17,19 @@
     loaded.set(file,promise);return promise;
   }
   async function render(settings={}){
-    const next=settings.homepageProvider==='yandex' ? 'yandex' : 'google';
+    const next=['yandex','translate'].includes(settings.homepageProvider) ? settings.homepageProvider : 'google';
     document.documentElement.dataset.hgProvider=next;
     if(next===provider)return;
     const run=++generation;
     provider=next;cleanup?.();cleanup=undefined;
     const container=document.createElement('div');app.replaceChildren(container);
     try{
-      if(next==='yandex'){
+      if(next==='translate'){
+        await Promise.all([load('translate-ui.js'),load('translate.css','style')]);
+        if(run!==generation)return;
+        const release=await window.TranslateGlass.mount(container,{assetBase});
+        if(run!==generation){release();return;}cleanup=release;
+      }else if(next==='yandex'){
         await Promise.all([load('yandex-ui.js'),load('yandex.css','style')]);
         if(run!==generation)return;
         const release=await window.YandexGlass.mount(container,{assetBase});

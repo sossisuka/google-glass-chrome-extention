@@ -1,0 +1,19 @@
+{
+  "source": "Trusted CDP mouse/keyboard input; actual Google service; synthetic SpeechRecognition callbacks only",
+  "checks": [
+    "Trusted keyboard clicks append multiple keys, delete, insert spaces and replace selected text",
+    "Clicking the selected language opens the searchable list and Escape closes it",
+    "Speech API callbacks handle start/stop, transcript input, microphone denial and unsupported browsers",
+    "Google apps menu opens with working service links",
+    "Copy writes the live translation; Share writes an encoded, reusable Google Translate link",
+    "Swap exchanges native languages and translates the previous result in the opposite direction",
+    "Rate translation opens Google’s real rating choices without submitting a rating",
+    "Feedback opens Google’s feedback workflow without submitting feedback",
+    "docs mode opens accessible native controls and its browse button opens the real file chooser",
+    "websites mode opens accessible native controls and its URL entry enables translation",
+    "images mode opens accessible native controls and its browse button opens the real file chooser",
+    "Returning from each native mode remounts the themed text translator",
+    "No runtime exceptions across the live translator controls"
+  ],
+  "errors": []
+}

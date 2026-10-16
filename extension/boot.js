@@ -10,10 +10,17 @@
   let lastAvatar = '';
   const isGoogle = /(^|\.)google\./.test(location.hostname) && location.hostname !== 'mail.google.com';
   const isYandex=/(^|\.)yandex\.(ru|com|by|kz)$|(^|\.)ya\.ru$/.test(location.hostname);
-  const site = isYandex ? 'yandex' : location.hostname === 'mail.google.com' ? 'gmail' : /(^|\.)youtube\.com$/.test(location.hostname) ? 'youtube' : 'google';
+  const isTranslate=/^translate\.google\.(com|ru)$/.test(location.hostname);
+  const site = isTranslate ? 'translate' : isYandex ? 'yandex' : location.hostname === 'mail.google.com' ? 'gmail' : /(^|\.)youtube\.com$/.test(location.hostname) ? 'youtube' : 'google';
   function route() {
     const url = new URL(location.href);
     if(site==='yandex')return url.pathname==='/' && !url.searchParams.has('text') ? 'yandex-home' : '';
+    if(site==='translate'){
+      if(url.pathname!=='/')return '';
+      const mode=document.querySelector('[jsname=bl4nBb][aria-current=page],[jsname=qDeCrf][aria-current=page],[jsname=SHEbFd][aria-current=page],[jsname=n87sxd][aria-current=page]');
+      if(mode)return mode.getAttribute('jsname')==='bl4nBb' ? 'translate-home' : 'translate-native';
+      return !url.searchParams.get('op') || url.searchParams.get('op')==='translate' ? 'translate-home' : 'translate-native';
+    }
     if (site !== 'google') return site;
     if (['/ai','/aimode'].includes(url.pathname) || (url.pathname === '/search' && url.searchParams.get('udm') === '50')) return 'ai';
     if (url.pathname === '/search' && url.searchParams.has('q')) return 'results';
@@ -32,7 +39,8 @@
     html.toggleAttribute('data-hg-ai', Boolean(enabled && current === 'ai'));
     html.toggleAttribute('data-hg-youtube', Boolean(enabled && current === 'youtube'));
     html.toggleAttribute('data-hg-gmail', Boolean(enabled && current === 'gmail'));
-    if (enabled && ['home','yandex-home'].includes(current) && !document.querySelector('#hero-google-root[data-hg-ready],#hero-yandex-root[data-hg-ready]')) html.setAttribute('data-hg-home-loading','');
+    html.toggleAttribute('data-hg-translate',Boolean(enabled && ['translate-home','translate-native'].includes(current)));
+    if (enabled && ['home','yandex-home','translate-home'].includes(current) && !html.hasAttribute('data-hg-translate-native') && !document.querySelector('#hero-google-root[data-hg-ready],#hero-yandex-root[data-hg-ready],#hero-translate-root[data-hg-ready]')) html.setAttribute('data-hg-home-loading','');
     else html.removeAttribute('data-hg-home-loading');
     if (loaded) html.removeAttribute('data-hg-pending');
     const key = `${current}:${enabled}:${mode}`;
@@ -51,7 +59,7 @@
     sync();
     return settings;
   }).catch(() => {loaded = true;sync();return settings;});
-  window.HeroGoogleBoot = {ready, get settings(){return settings;}, route, sync, finishHome(){document.querySelector('#hero-google-root,#hero-yandex-root')?.setAttribute('data-hg-ready','');html.removeAttribute('data-hg-home-loading');clearTimeout(failSafe);}};
+  window.HeroGoogleBoot = {ready, get settings(){return settings;}, route, sync, finishHome(){document.querySelector('#hero-google-root,#hero-yandex-root,#hero-translate-root')?.setAttribute('data-hg-ready','');html.removeAttribute('data-hg-home-loading');clearTimeout(failSafe);}};
   chrome.storage.onChanged.addListener((changes,area) => {
     if(area === 'local' && changes.settings){settings = changes.settings.newValue || {};sync();}
   });
@@ -82,7 +90,7 @@
     if (!routeQueued) {routeQueued = true;queueMicrotask(()=>{routeQueued=false;sync();});}
     clearTimeout(avatarTimer);
     avatarTimer = setTimeout(discoverAvatar, 80);
-  }).observe(html, {childList:true,subtree:true});
+  }).observe(html, {childList:true,subtree:true,attributes:true,attributeFilter:['aria-current']});
   for(const name of ['popstate','pageshow','yt-navigate-finish']) window.addEventListener(name, sync);
   window.navigation?.addEventListener('currententrychange',sync);
   matchMedia('(prefers-color-scheme: light)').addEventListener('change',sync);

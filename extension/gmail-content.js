@@ -55,7 +55,8 @@
         const originalBg=rgb(style.backgroundColor) || [0,0,0,0];
         const parentBg=backgrounds.get(element.parentElement) || (chrome ? canvas : panel);
         const masked=chrome && style.maskImage!=='none';
-        const iconInk=neutral(parentBg) && contrast(muted,parentBg)>=3 ? muted : contrast(text,parentBg)>=3 ? text : [20,25,32,1];
+        const composeIcon=chrome && element.closest('.z0>.L3,.z0>[role=button]');
+        const iconInk=composeIcon ? [244,247,255,1] : neutral(parentBg) && contrast(muted,parentBg)>=3 ? muted : contrast(text,parentBg)>=3 ? text : [20,25,32,1];
         let nextBg=originalBg;
         if(masked && originalBg[3]>0 && neutral(originalBg) && contrast(blend(originalBg,parentBg),parentBg)<3)nextBg=iconInk;
         else if(originalBg[3]>.5 && neutral(originalBg) && luminance(originalBg)>.45){

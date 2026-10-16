@@ -1,0 +1,12 @@
+{
+  "source": "Current public Google Translate, isolated signed-out profile",
+  "checks": [
+    "Installed theme mounts over the current public Google Translate text interface",
+    "Trusted input is translated by Google’s live engine and the real result appears in the HeroUI pane",
+    "Target-language controls update Google’s native language state",
+    "Searchable language selector reaches a language outside the quick choices and renders its live translation",
+    "Disabling Translate restores the live native interface and preserves the entered text",
+    "No runtime exceptions during the live Translate flow"
+  ],
+  "errors": []
+}

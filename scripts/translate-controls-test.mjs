@@ -1,0 +1,127 @@
+import {fileURLToPath} from 'node:url';
+import {writeFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import {launch,until,delay} from './cdp.mjs';
+const browser=await launch({extension:fileURLToPath(new URL('../extension/',import.meta.url)),port:9368});
+const checks=[],errors=[];
+const pass=name=>{checks.push(name);console.log('PASS: '+name);};
+let active;
+async function click(page,expression){
+  const point=await page.evaluate(`(()=>{const el=${expression};if(!el)throw Error('Missing clickable control');let r=el.getBoundingClientRect();if(r.top<0 || r.bottom>innerHeight){el.scrollIntoView({block:'nearest'});r=el.getBoundingClientRect();}return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
+  await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',...point});
+  await page.send('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point});
+  await page.send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});
+}
+async function snapshot(page,name){await writeFile(`qa/${name}.png`,Buffer.from((await page.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false})).data,'base64'));}
+try{
+  const worker=await until(async()=> (await (await fetch(`${browser.endpoint}/json/list`)).json()).find(item=>item.type==='service_worker' && item.url.endsWith('/background.js')));
+  const base=`chrome-extension://${new URL(worker.url).hostname}/`;
+  const settings=await browser.page(base+'popup.html');
+  await until(()=>settings.evaluate("Boolean(document.querySelector('.hg-panel'))"));
+  await settings.evaluate("chrome.storage.local.set({settings:{theme:'dark',language:'en',sites:{translate:true}}})");
+  const local=await browser.page(base+'translate.html');active=local;
+  await local.send('Page.bringToFront');
+  await local.send('Emulation.setDeviceMetricsOverride',{width:1568,height:882,deviceScaleFactor:1,mobile:false});
+  await until(()=>local.evaluate("Boolean(document.querySelector('#translate-source'))"));
+  await local.evaluate("document.querySelector('#translate-source').focus()");
+  await local.send('Input.insertText',{text:'Hello'});
+  await click(local,"document.querySelector('.tr-keyboard-trigger')");
+  await until(()=>local.evaluate("Boolean(document.querySelector('.tr-key[data-key=q]'))"));
+  await delay(300);
+  for(const key of ['q','w','e']){await click(local,`document.querySelector('.tr-key[data-key=${key}]')`);await delay(40);}
+  assert.equal(await local.evaluate("document.querySelector('#translate-source').value"),'Helloqwe');
+  await click(local,"document.querySelector('.tr-key[aria-label=Backspace]')");
+  await click(local,"document.querySelector('.tr-space')");
+  assert.equal(await local.evaluate("document.querySelector('#translate-source').value"),'Helloqw ');
+  await click(local,"document.querySelector('.tr-keyboard-heading button')");
+  await local.evaluate("const field=document.querySelector('#translate-source');field.focus();field.setSelectionRange(1,4);field.dispatchEvent(new Event('select',{bubbles:true}))");
+  await delay(100);
+  await click(local,"document.querySelector('.tr-keyboard-trigger')");await until(()=>local.evaluate("Boolean(document.querySelector('.tr-keyboard'))"));await delay(300);
+  await click(local,"document.querySelector('.tr-key[data-key=q]')");
+  assert.equal(await local.evaluate("document.querySelector('#translate-source').value"),'Hqoqw ');
+  await click(local,"document.querySelector('.tr-keyboard-heading button')");
+  pass('Trusted keyboard clicks append multiple keys, delete, insert spaces and replace selected text');
+  await click(local,"document.querySelector('.tr-source-pane .is-selected')");
+  await until(()=>local.evaluate("Boolean(document.querySelector('.tr-language-menu [role=listbox]'))"));
+  await local.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+  await local.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+  await until(()=>local.evaluate("!document.querySelector('.tr-language-menu')"));
+  pass('Clicking the selected language opens the searchable list and Escape closes it');
+  await local.evaluate("window.SpeechRecognition=class {constructor(){window.testSpeech=this;}start(){this.started=true;}stop(){this.onend?.();}abort(){this.onend?.();}};");
+  await click(local,"document.querySelector('.tr-voice')");
+  assert.equal(await local.evaluate("document.querySelector('.tr-voice').getAttribute('aria-pressed')"),'true');
+  await click(local,"document.querySelector('.tr-voice')");
+  await until(()=>local.evaluate("document.querySelector('.tr-voice').getAttribute('aria-pressed')==='false'"));
+  await click(local,"document.querySelector('.tr-method')");
+  await local.evaluate("testSpeech.onresult({results:[[{transcript:'Hello from voice'}]]});testSpeech.onend()");
+  assert.equal(await local.evaluate("document.querySelector('#translate-source').value"),'Hello from voice');
+  await click(local,"document.querySelector('.tr-voice')");
+  await local.evaluate("testSpeech.onerror({error:'not-allowed'});testSpeech.onend()");
+  await until(()=>local.evaluate("document.querySelector('.tr-toast')?.textContent.includes('microphone')"));
+  await local.evaluate("window.SpeechRecognition=undefined;window.webkitSpeechRecognition=undefined");
+  await click(local,"document.querySelector('.tr-voice')");
+  await until(()=>local.evaluate("document.querySelector('.tr-toast')?.textContent.includes('unavailable')"));
+  pass('Speech API callbacks handle start/stop, transcript input, microphone denial and unsupported browsers');
+  await click(local,"document.querySelector('[aria-label=\"Google apps\"]')");
+  await until(()=>local.evaluate("document.querySelectorAll('.tr-apps-grid a').length===4"));
+  assert(await local.evaluate("[...document.querySelectorAll('.tr-apps-grid a')].every(a=>new URL(a.href).protocol==='https:')"));
+  await click(local,"document.querySelector('[aria-label=\"Google apps\"]')");
+  pass('Google apps menu opens with working service links');
+
+  const page=await browser.page('https://translate.google.com/?hl=en&sl=en&tl=ru&op=translate');active=page;
+  page.on('Runtime.exceptionThrown',event=>errors.push(event.exceptionDetails.exception?.description || event.exceptionDetails.text));
+  await page.send('Page.bringToFront');
+  await page.send('Emulation.setDeviceMetricsOverride',{width:1568,height:882,deviceScaleFactor:1,mobile:false});
+  await until(()=>page.evaluate("Boolean(document.querySelector('textarea.er8xn')) || location.hostname==='consent.google.com' && Boolean(document.querySelector('button[aria-label]'))"),30000);
+  if(await page.evaluate("location.hostname==='consent.google.com'"))await page.evaluate("[...document.querySelectorAll('button')].find(el=>/Reject all/.test(el.textContent) && el.getClientRects().length)?.click()");
+  const root="document.querySelector('#hero-translate-root')?.shadowRoot";
+  const ready=()=>until(()=>page.evaluate(`Boolean(${root}?.querySelector('#translate-source')) && !document.documentElement.hasAttribute('data-hg-home-loading')`),30000);
+  await ready();
+  await delay(500);
+  await click(page,`${root}.querySelector('#translate-source')`);
+  assert(await page.evaluate(`${root}.activeElement?.id==='translate-source'`),'Trusted click must focus the visible source textarea');
+  await page.send('Input.insertText',{text:'Hello'});
+  await until(()=>page.evaluate(`${root}.querySelector('.tr-result').textContent==='Привет'`),25000);
+  await browser.connection.send('Browser.grantPermissions',{origin:'https://translate.google.com',permissions:['clipboardReadWrite','clipboardSanitizedWrite']});
+  await click(page,`${root}.querySelector('[aria-label="Copy translation"]')`);
+  await until(()=>page.evaluate(`${root}.querySelector('.tr-toast')?.textContent==='Translation copied'`));
+  assert.equal(await page.evaluate('navigator.clipboard.readText()'),'Привет');
+  await click(page,`${root}.querySelector('[aria-label="Share translation"]')`);
+  await until(()=>page.evaluate(`${root}.querySelector('.tr-toast')?.textContent==='Translation link copied'`));
+  const shareURL=new URL(await page.evaluate('navigator.clipboard.readText()'));
+  assert.equal(shareURL.hostname,'translate.google.com');assert.equal(shareURL.searchParams.get('text'),'Hello');assert.equal(shareURL.searchParams.get('tl'),'ru');
+  pass('Copy writes the live translation; Share writes an encoded, reusable Google Translate link');
+  await click(page,`${root}.querySelector('.tr-swap')`);
+  await until(()=>page.evaluate(`new URL(location.href).searchParams.get('sl')==='ru' && new URL(location.href).searchParams.get('tl')==='en' && ${root}?.querySelector('#translate-source')?.value==='Привет' && /hello|hi/i.test(${root}?.querySelector('.tr-result')?.textContent)`),25000);
+  pass('Swap exchanges native languages and translates the previous result in the opposite direction');
+  await click(page,`${root}.querySelector('[aria-label="Rate translation"]')`);
+  await until(()=>page.evaluate("!document.querySelector('#hero-translate-root') && [...document.querySelectorAll('[role=button],button')].some(el=>/Good translation|Poor translation|Bad translation/.test(el.getAttribute('aria-label') || el.textContent) && el.getClientRects().length)"));
+  pass('Rate translation opens Google’s real rating choices without submitting a rating');
+  await page.send('Page.reload');await ready();
+  await click(page,`${root}.querySelector('.tr-feedback')`);
+  await until(()=>page.evaluate("!document.querySelector('#hero-translate-root') && Boolean(document.querySelector('iframe[src*=feedback], [role=dialog]'))"));
+  pass('Feedback opens Google’s feedback workflow without submitting feedback');
+  for(const [index,op] of [[1,'docs'],[2,'websites'],[3,'images']]){
+    await page.send('Page.navigate',{url:'https://translate.google.com/?hl=en&sl=en&tl=ru&op=translate'});await ready();
+    await click(page,`${root}.querySelectorAll('.tr-mode-button')[${index}]`);
+    const modeName={docs:'qDeCrf',websites:'n87sxd',images:'SHEbFd'}[op];
+    await until(()=>page.evaluate(`Boolean(document.querySelector('[jsname=${modeName}][aria-current=page]')) && !document.querySelector('#hero-translate-root') && document.readyState==='complete'`),30000);
+    await until(()=>page.evaluate(op==='websites' ? "Boolean(document.querySelector('input[type=url]')?.getClientRects().length)" : "[...document.querySelectorAll('input[type=file]')].some(el=>el.accept.includes('"+(op==='docs' ? 'application/pdf' : 'image/png')+"'))"),15000);
+    assert(await page.evaluate("!document.querySelector('main')?.inert && document.documentElement.hasAttribute('data-hg-translate')"));
+    if(op==='websites'){
+      await click(page,"document.querySelector('input[type=url]')");await page.send('Input.insertText',{text:'https://example.com/'});
+      assert(await page.evaluate("[...document.querySelectorAll('button')].some(el=>el.getAttribute('aria-label')==='Translate website' && !el.disabled)"));
+    }else{
+      const expression="[...document.querySelectorAll('button')].find(el=>el.getAttribute('aria-label')==='Browse your files' && el.getClientRects().length)";
+      await page.send('Page.setInterceptFileChooserDialog',{enabled:true});let chooser=false;
+      const detach=page.on('Page.fileChooserOpened',()=>{chooser=true;});await click(page,expression);await until(()=>chooser);detach();
+    }
+    await snapshot(page,`translate-live-${op}`);
+    pass(`${op} mode opens accessible native controls and its ${op==='websites' ? 'URL entry enables translation' : 'browse button opens the real file chooser'}`);
+    await click(page,"document.querySelector('[jsname=bl4nBb]')");await ready();
+    assert(await page.evaluate(`${root}.querySelector('.tr-workspace')!==null`));
+  }
+  pass('Returning from each native mode remounts the themed text translator');
+  assert.deepEqual(errors,[]);pass('No runtime exceptions across the live translator controls');
+  await writeFile('qa/translate-controls-results.json',JSON.stringify({source:'Trusted CDP mouse/keyboard input; actual Google service; synthetic SpeechRecognition callbacks only',checks,errors},null,2)+'\n');
+}catch(error){console.error(await active?.evaluate("({url:location.href,text:document.body.innerText.slice(-1500),shadow:document.querySelector('#hero-translate-root')?.shadowRoot.innerHTML.slice(-1600)})").catch(()=>null));await snapshot(active,'translate-control-failure').catch(()=>{});throw error;}finally{await browser.stop();}

@@ -1,0 +1,52 @@
+import {fileURLToPath} from 'node:url';
+import {writeFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import {launch,until,delay} from './cdp.mjs';
+const browser=await launch({extension:fileURLToPath(new URL('../extension/',import.meta.url)),port:9363});
+const checks=[],errors=[];
+let livePage;
+const pass=name=>{checks.push(name);console.log('PASS: '+name);};
+try{
+  const worker=await until(async()=> (await (await fetch(`${browser.endpoint}/json/list`)).json()).find(item=>item.type==='service_worker' && item.url.endsWith('/background.js')));
+  const settings=await browser.page(`chrome-extension://${new URL(worker.url).hostname}/popup.html`);
+  await until(()=>settings.evaluate("Boolean(document.querySelector('.hg-panel'))"));
+  await settings.evaluate("chrome.storage.local.set({settings:{theme:'dark',language:'ru',sites:{translate:true}}})");
+  const page=await browser.page('https://translate.google.com/?hl=ru&sl=auto&tl=ru&op=translate');
+  livePage=page;
+  page.on('Runtime.exceptionThrown',event=>errors.push(event.exceptionDetails.exception?.description || event.exceptionDetails.text));
+  await page.send('Page.bringToFront');
+  await page.send('Emulation.setDeviceMetricsOverride',{width:1568,height:882,deviceScaleFactor:1,mobile:false});
+  await until(()=>page.evaluate("Boolean(document.querySelector('textarea.er8xn')) || location.hostname==='consent.google.com' && Boolean(document.querySelector('button[aria-label]'))"),30000);
+  if(await page.evaluate("location.hostname==='consent.google.com'")){
+    await page.evaluate("[...document.querySelectorAll('button')].find(el=>/Отклонить все|Reject all/.test(el.textContent) && el.getClientRects().length)?.click()");
+  }
+  const root="document.querySelector('#hero-translate-root')?.shadowRoot";
+  await until(()=>page.evaluate(`Boolean(${root}?.querySelector('#translate-source')) && !document.documentElement.hasAttribute('data-hg-home-loading')`),30000);
+  await delay(400);
+  await writeFile('qa/translate-live-empty.png',Buffer.from((await page.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false})).data,'base64'));
+  pass('Installed theme mounts over the current public Google Translate text interface');
+  await page.evaluate(`${root}.querySelector('#translate-source').focus()`);
+  await page.send('Input.insertText',{text:'Hello'});
+  await until(()=>page.evaluate(`${root}.querySelector('.tr-result').textContent==='Привет'`),25000);
+  assert.equal(await page.evaluate('new URL(location.href).searchParams.get("text")'),'Hello');
+  pass('Trusted input is translated by Google’s live engine and the real result appears in the HeroUI pane');
+  await writeFile('qa/translate-live-result.png',Buffer.from((await page.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false})).data,'base64'));
+  await page.evaluate(`${root}.querySelector('.tr-target-pane [data-language=en]').click()`);
+  await until(()=>page.evaluate("new URL(location.href).searchParams.get('tl')==='en'"));
+  pass('Target-language controls update Google’s native language state');
+  await page.evaluate(`${root}.querySelector('[data-testid=target-languages]').click()`);
+  await until(()=>page.evaluate(`Boolean(${root}.querySelector('.tr-language-menu [role=listbox]'))`));
+  await page.evaluate(`${root}.querySelector('.tr-language-search input').focus()`);
+  await page.send('Input.insertText',{text:'fr'});
+  await until(()=>page.evaluate(`Boolean(${root}.querySelector('[role=option][data-key=fr]'))`));
+  await page.evaluate(`${root}.querySelector('[role=option][data-key=fr]').click()`);
+  await until(()=>page.evaluate(`new URL(location.href).searchParams.get('tl')==='fr' && ${root}?.querySelector('.tr-result')?.textContent.toLowerCase().includes('bonjour')`),25000);
+  pass('Searchable language selector reaches a language outside the quick choices and renders its live translation');
+  await settings.evaluate("chrome.storage.local.set({settings:{theme:'dark',language:'ru',sites:{translate:false}}})");
+  await until(()=>page.evaluate("!document.querySelector('#hero-translate-root') && !document.documentElement.hasAttribute('data-hg-translate')"));
+  assert.equal(await page.evaluate("document.querySelector('textarea.er8xn').value"),'Hello');
+  assert(await page.evaluate("!document.querySelector('textarea.er8xn').closest('[inert]')"));
+  pass('Disabling Translate restores the live native interface and preserves the entered text');
+  assert.deepEqual(errors,[]);pass('No runtime exceptions during the live Translate flow');
+  await writeFile('qa/translate-live-results.json',JSON.stringify({source:'Current public Google Translate, isolated signed-out profile',checks,errors},null,2)+'\n');
+}catch(error){const diagnostic=await livePage?.evaluate("({url:location.href,native:document.querySelector('textarea.er8xn')?.value,nativeOutput:[...document.querySelectorAll('.ryNqvb')].map(el=>el.textContent),themedOutput:document.querySelector('#hero-translate-root')?.shadowRoot.querySelector('.tr-result')?.textContent,selected:[...document.querySelectorAll('[role=tab][aria-selected=true][data-language-code]')].map(el=>el.dataset.languageCode)})").catch(()=>null);console.error(diagnostic);await writeFile('qa/translate-live-results.json',JSON.stringify({checks,errors,failure:error.message,diagnostic},null,2)+'\n');throw error;}finally{await browser.stop();}

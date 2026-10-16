@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Google Glass",
-  "version": "1.3.0",
-  "description": "HeroUI Google and Yandex homepages, AI Mode, YouTube and Gmail themes. Custom backgrounds, light mode and New Tab choices.",
+  "version": "1.4.0",
+  "description": "HeroUI Google, Yandex and Translate pages. AI Mode, YouTube and Gmail themes, custom backgrounds and light mode.",
   "minimum_chrome_version": "120",
   "permissions": [
     "storage"
@@ -86,6 +86,8 @@
         "https://www.yandex.by/*",
         "https://yandex.kz/*",
         "https://www.yandex.kz/*",
+        "https://translate.google.com/*",
+        "https://translate.google.ru/*",
         "https://www.youtube.com/*",
         "https://youtube.com/*",
         "https://mail.google.com/*"
@@ -228,6 +230,20 @@
     },
     {
       "matches": [
+        "https://translate.google.com/*",
+        "https://translate.google.ru/*"
+      ],
+      "css": [
+        "translate-native.css"
+      ],
+      "js": [
+        "translate-ui.js",
+        "translate-content.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
         "https://www.youtube.com/*",
         "https://youtube.com/*"
       ],
@@ -254,6 +270,7 @@
         "ui.css",
         "youtube.css",
         "yandex.css",
+        "translate.css",
         "assets/*",
         "assets/icons/*",
         "assets/flags/*",
@@ -310,6 +327,8 @@
         "https://www.yandex.by/*",
         "https://yandex.kz/*",
         "https://www.yandex.kz/*",
+        "https://translate.google.com/*",
+        "https://translate.google.ru/*",
         "https://www.youtube.com/*",
         "https://youtube.com/*",
         "https://mail.google.com/*"

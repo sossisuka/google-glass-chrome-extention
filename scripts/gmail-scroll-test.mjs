@@ -1,0 +1,58 @@
+import {writeFile,readFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import assert from 'node:assert/strict';
+import {launch,until,delay} from './cdp.mjs';
+import {gmailLayoutFixture} from './gmail-layout-fixture.mjs';
+const browser=await launch({extension:fileURLToPath(new URL('../extension/',import.meta.url)),port:9364});
+const checks=[],errors=[];
+const pass=name=>{checks.push(name);console.log('PASS: '+name);};
+try{
+  const worker=await until(async()=> (await (await fetch(`${browser.endpoint}/json/list`)).json()).find(item=>item.type==='service_worker' && item.url.endsWith('/background.js')));
+  const base=`chrome-extension://${new URL(worker.url).hostname}/`;
+  const settings=await browser.page(base+'popup.html');
+  await until(()=>settings.evaluate("Boolean(document.querySelector('.hg-panel'))"));
+  await settings.evaluate("chrome.storage.local.set({settings:{theme:'dark',sites:{gmail:true}}})");
+  const page=await browser.page();page.on('Runtime.exceptionThrown',event=>errors.push(event.exceptionDetails.exception?.description || event.exceptionDetails.text));
+  let fixture=gmailLayoutFixture(base).replace(/<img id="gmail-native-logo"[^>]+>/, '<div id="logo-frame" class="gb_6c gb_ue"><a class="gb_oe gb_7c gb_se" aria-label="Mail" href="#inbox"><img id="gmail-native-logo" class="gb_bd" src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/logo_gmail_lockup_default_1x_r7.png" alt="Gmail" style="width:109px;height:40px"></a></div>');
+  fixture=fixture.replace('</head>',`<style>.main-wrap main{height:calc(100vh - 76px);overflow:auto}.G-atb{position:sticky;top:0;z-index:5;background:#fff}.G-atb::before{content:'';position:absolute;inset:0;background:#fff;z-index:-1;box-shadow:0 2px 4px #fff}.native-scrolled .G-atb{background:#fff}.gb_6c.gb_ue{background:#eaf1fb;border:1px solid #dadce0;border-radius:20px;padding:3px}.native-raster{width:22px;height:22px;background:url('${base}assets/icons/refresh.svg') center/contain no-repeat}</style></head>`);
+  page.on('Fetch.requestPaused',event=>page.send('Fetch.fulfillRequest',{requestId:event.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'text/html; charset=utf-8'}],body:Buffer.from(fixture).toString('base64')}));
+  await page.send('Fetch.enable',{patterns:[{urlPattern:'https://mail.google.com/*',resourceType:'Document',requestStage:'Request'}]});
+  await page.send('Page.navigate',{url:'https://mail.google.com/mail/u/0/#inbox'});
+  await page.send('Page.bringToFront');
+  await page.send('Emulation.setDeviceMetricsOverride',{width:1568,height:882,deviceScaleFactor:1,mobile:false});
+  await until(()=>page.evaluate("document.documentElement.hasAttribute('data-hg-gmail') && getComputedStyle(document.querySelector('.label-heading')).color==='rgb(233, 237, 245)'"));
+  const logo=await page.evaluate("(()=>{const s=getComputedStyle(document.querySelector('#logo-frame'));return {background:s.backgroundColor,border:s.borderTopWidth,radius:s.borderRadius,shadow:s.boxShadow}})()");
+  assert.deepEqual(logo,{background:'rgba(0, 0, 0, 0)',border:'0px',radius:'0px',shadow:'none'});
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('[role=search]')).borderRadius"),'20px');
+  pass('Exact Gmail logo container has no capsule, border or shadow while the real search field keeps its glass surface');
+  const compose=await page.evaluate("getComputedStyle(document.querySelector('#layout-compose')).backgroundImage");
+  assert(compose.includes('linear-gradient(155deg') && compose.includes('83, 149, 221') && compose.includes('31, 50, 78'));
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('#layout-compose .native-glyph')).backgroundColor"),'rgb(244, 247, 255)');
+  pass('Compose uses the reference’s bright upper-left blue to dark lower-right gradient and a light pencil icon');
+  await page.evaluate("var raster=document.createElement('span');raster.className='native-raster T-I-J3';document.querySelector('.G-atb').append(raster);var star=document.createElement('button');star.className='T-KT T-KT-Jp';star.id='gold-star';star.innerHTML='<span class=\"native-glyph\" style=\"--glyph:url('+"+JSON.stringify(base+'assets/icons/star.svg')+"+');background:#fbbc04\"></span>';document.querySelector('.G-atb').append(star)");
+  await until(()=>page.evaluate("getComputedStyle(document.querySelector('.native-raster')).filter!=='none'"));
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('.T-Jo')).opacity"),'1');
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('#gold-star')).filter"),'none');
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('#gold-star .native-glyph')).backgroundColor"),'rgb(251, 188, 4)');
+  pass('Native sprite icons remain visible and muted; selected gold stars retain their color');
+  await delay(250);
+  await writeFile('qa/gmail-scroll-top.png',Buffer.from((await page.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false})).data,'base64'));
+  await page.evaluate("document.querySelector('main').scrollTop=410;document.body.classList.add('native-scrolled')");
+  await delay(250);
+  for(const pseudo of [null,'::before','::after']){
+    const value=await page.evaluate(`getComputedStyle(document.querySelector('.G-atb'),${JSON.stringify(pseudo)}).backgroundColor`);
+    assert.equal(value,'rgb(13, 16, 21)');
+  }
+  const toolbar=await page.evaluate("(()=>{const rect=document.querySelector('.G-atb').getBoundingClientRect();return {top:rect.top,scroll:document.querySelector('main').scrollTop}})()");
+  assert(toolbar.scroll>=400 && toolbar.top>=60 && toolbar.top<80);
+  await writeFile('qa/gmail-scroll-dark.png',Buffer.from((await page.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false})).data,'base64'));
+  pass('Scrolled sticky toolbar and both pseudo layers stay dark at the top of the real scroll container');
+  await settings.evaluate("chrome.storage.local.set({settings:{theme:'light',sites:{gmail:true}}})");
+  await until(()=>page.evaluate("getComputedStyle(document.querySelector('.G-atb')).backgroundColor==='rgb(255, 255, 255)'"));
+  await settings.evaluate("chrome.storage.local.set({settings:{theme:'dark',sites:{gmail:false}}})");
+  await until(()=>page.evaluate("!document.documentElement.hasAttribute('data-hg-gmail')"));
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('#logo-frame')).borderTopWidth"),'1px');
+  assert.equal(await page.evaluate("getComputedStyle(document.querySelector('#layout-compose')).backgroundImage"),'none');
+  assert.deepEqual(errors,[]);pass('Light mode and disabling Gmail restore original surfaces and styles without adapter exceptions');
+  await writeFile('qa/gmail-scroll-test-results.json',JSON.stringify({source:'Anonymized native layout with the supplied logo DOM and a sticky toolbar; no personal inbox content',checks,errors},null,2)+'\n');
+}finally{await browser.stop();}
