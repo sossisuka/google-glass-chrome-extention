@@ -104,7 +104,7 @@ function Panel({settings,lang,assetBase,backgroundImage,onChange,onBackground,on
     try {await onChange(key,value,next);setStatus('saved');} catch {setStatus('saveError');}
   }
   return <HeroUIProvider disableAnimation={matchMedia('(prefers-reduced-motion: reduce)').matches}><div className={`${resolveTheme(draft)} hg-panel hg-heroui-controls`}>
-    <header className="hg-panel-heading"><span className="hg-panel-symbol"><img src={`${assetBase}assets/icons/sparkles.svg`} alt=""/></span><div><h1>Google Glass</h1><p>{t.subtitle}</p></div><Chip size="sm" variant="flat">1.4.2</Chip></header>
+    <header className="hg-panel-heading"><span className="hg-panel-symbol"><img src={`${assetBase}assets/icons/sparkles.svg`} alt=""/></span><div><h1>Google Glass</h1><p>{t.subtitle}</p></div><Chip size="sm" variant="flat">1.4.3</Chip></header>
     <Fields initial={settings} lang={lang} assetBase={assetBase} backgroundImage={backgroundImage} onChange={save} onBackground={onBackground} popup/>
     <footer className="hg-panel-footer"><span role="status">{status ? t[status] : ''}</span><Button id="open" className="hg-button hg-primary" onPress={onOpen}>{t.newtab}</Button></footer>
   </div></HeroUIProvider>;

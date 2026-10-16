@@ -18,7 +18,9 @@ assert(manifest.web_accessible_resources.some(item=>item.resources.includes('you
 assert(manifest.content_scripts.some(item=>item.matches.includes('https://ya.ru/*') && item.js.includes('yandex-content.js') && item.js.includes('yandex-ui.js')));
 assert(manifest.web_accessible_resources.some(item=>item.resources.includes('yandex.css')));
 assert(manifest.content_scripts.some(item=>item.matches.includes('https://translate.google.com/*') && item.js.includes('translate-ui.js') && item.js.includes('translate-content.js')));
+assert(manifest.content_scripts.some(item=>item.matches.includes('https://translate.google.ru/*') && item.js.includes('translate-ui.js') && item.js.includes('translate-content.js')));
 assert(manifest.web_accessible_resources.some(item=>item.resources.includes('translate.css')));
+assert(manifest.web_accessible_resources.some(item=>item.resources.includes('translate.css') && item.matches.includes('https://translate.google.ru/*')));
 assert.equal(manifest.version,JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8')).version);
 await Promise.all(declared.map(file => access(new URL(file,directory))));
 for (const file of await readdir(directory)) {

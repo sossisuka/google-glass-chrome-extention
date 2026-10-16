@@ -4,6 +4,9 @@ import assert from 'node:assert/strict';
 import {launch,until,delay} from './cdp.mjs';
 import {waitForGoogleUI} from './google-live.mjs';
 const browser=await launch({extension:fileURLToPath(new URL('../extension/',import.meta.url)),port:9368});
+const origin=process.argv[2] || 'https://translate.google.com';
+if(!['https://translate.google.com','https://translate.google.ru'].includes(origin))throw Error('Unsupported test origin');
+const suffix=origin.endsWith('.ru') ? '-ru' : '';
 const checks=[],errors=[];
 const pass=name=>{checks.push(name);console.log('PASS: '+name);};
 let active;
@@ -13,7 +16,7 @@ async function click(page,expression){
   await page.send('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point});
   await page.send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});
 }
-async function snapshot(page,name){await writeFile(`qa/${name}.png`,Buffer.from((await page.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false})).data,'base64'));}
+async function snapshot(page,name){await writeFile(`qa/${name}${suffix}.png`,Buffer.from((await page.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false})).data,'base64'));}
 try{
   const worker=await until(async()=> (await (await fetch(`${browser.endpoint}/json/list`)).json()).find(item=>item.type==='service_worker' && item.url.endsWith('/background.js')));
   const base=`chrome-extension://${new URL(worker.url).hostname}/`;
@@ -69,7 +72,7 @@ try{
   await click(local,"document.querySelector('[aria-label=\"Google apps\"]')");
   pass('Google apps menu opens with working service links');
 
-  const page=await browser.page('https://translate.google.com/?hl=en&sl=en&tl=ru&op=translate');active=page;
+  const page=await browser.page(`${origin}/?hl=en&sl=en&tl=ru&op=translate`);active=page;
   page.on('Runtime.exceptionThrown',event=>errors.push(event.exceptionDetails.exception?.description || event.exceptionDetails.text));
   await page.send('Page.bringToFront');
   await page.send('Emulation.setDeviceMetricsOverride',{width:1568,height:882,deviceScaleFactor:1,mobile:false});
@@ -81,17 +84,17 @@ try{
   assert(await page.evaluate(`${root}.activeElement?.id==='translate-source'`),'Trusted click must focus the visible source textarea');
   await page.send('Input.insertText',{text:'Hello'});
   await until(()=>page.evaluate(`${root}.querySelector('.tr-result').textContent==='Привет'`),25000);
-  await browser.connection.send('Browser.setPermission',{origin:'https://translate.google.com',permission:{name:'clipboard-write'},setting:'denied'});
+  await browser.connection.send('Browser.setPermission',{origin,permission:{name:'clipboard-write'},setting:'denied'});
   await click(page,`${root}.querySelector('[aria-label="Copy translation"]')`);
   await until(()=>page.evaluate(`${root}.querySelector('.tr-toast')?.textContent==='Translation copied'`));
-  await browser.connection.send('Browser.grantPermissions',{origin:'https://translate.google.com',permissions:['clipboardReadWrite','clipboardSanitizedWrite']});
+  await browser.connection.send('Browser.grantPermissions',{origin,permissions:['clipboardReadWrite','clipboardSanitizedWrite']});
   assert.equal(await page.evaluate('navigator.clipboard.readText()'),'Привет');
-  await browser.connection.send('Browser.setPermission',{origin:'https://translate.google.com',permission:{name:'clipboard-write'},setting:'denied'});
+  await browser.connection.send('Browser.setPermission',{origin,permission:{name:'clipboard-write'},setting:'denied'});
   await click(page,`${root}.querySelector('[aria-label="Share translation"]')`);
   await until(()=>page.evaluate(`${root}.querySelector('.tr-toast')?.textContent==='Translation link copied'`));
-  await browser.connection.send('Browser.grantPermissions',{origin:'https://translate.google.com',permissions:['clipboardReadWrite','clipboardSanitizedWrite']});
+  await browser.connection.send('Browser.grantPermissions',{origin,permissions:['clipboardReadWrite','clipboardSanitizedWrite']});
   const shareURL=new URL(await page.evaluate('navigator.clipboard.readText()'));
-  assert.equal(shareURL.hostname,'translate.google.com');assert.equal(shareURL.searchParams.get('text'),'Hello');assert.equal(shareURL.searchParams.get('tl'),'ru');
+  assert.equal(shareURL.origin,origin);assert.equal(shareURL.searchParams.get('text'),'Hello');assert.equal(shareURL.searchParams.get('tl'),'ru');
   pass('Copy and Share write live translation data with site clipboard permission denied, without a pre-granted write permission');
   await click(page,`${root}.querySelector('.tr-source-pane [data-language=ru]')`);
   await click(page,`${root}.querySelector('.tr-target-pane [data-language=en]')`);
@@ -101,10 +104,10 @@ try{
   await delay(400);
   pass('The real ru→en URL, both selected language pills and the live English result stay synchronized');
   const english=await page.evaluate(`${root}.querySelector('.tr-result').textContent`);
-  await browser.connection.send('Browser.setPermission',{origin:'https://translate.google.com',permission:{name:'clipboard-write'},setting:'denied'});
+  await browser.connection.send('Browser.setPermission',{origin,permission:{name:'clipboard-write'},setting:'denied'});
   await click(page,`${root}.querySelector('[aria-label="Copy translation"]')`);
   await until(()=>page.evaluate(`${root}.querySelector('.tr-toast')?.textContent==='Translation copied'`));
-  await browser.connection.send('Browser.grantPermissions',{origin:'https://translate.google.com',permissions:['clipboardReadWrite','clipboardSanitizedWrite']});
+  await browser.connection.send('Browser.grantPermissions',{origin,permissions:['clipboardReadWrite','clipboardSanitizedWrite']});
   assert.equal(await page.evaluate('navigator.clipboard.readText()'),english);
   await snapshot(page,'translate-live-ru-en');
   pass('Copy after changing languages writes the new English result rather than the previous Russian translation');
@@ -119,7 +122,7 @@ try{
   await until(()=>page.evaluate("!document.querySelector('#hero-translate-root') && Boolean(document.querySelector('iframe[src*=feedback], [role=dialog]'))"));
   pass('Feedback opens Google’s feedback workflow without submitting feedback');
   for(const [index,op] of [[1,'docs'],[2,'websites'],[3,'images']]){
-    await page.send('Page.navigate',{url:'https://translate.google.com/?hl=en&sl=en&tl=ru&op=translate'});await ready();
+    await page.send('Page.navigate',{url:`${origin}/?hl=en&sl=en&tl=ru&op=translate`});await ready();
     await click(page,`${root}.querySelectorAll('.tr-mode-button')[${index}]`);
     const modeName={docs:'qDeCrf',websites:'n87sxd',images:'SHEbFd'}[op];
     await until(()=>page.evaluate(`Boolean(document.querySelector('[jsname=${modeName}][aria-current=page]')) && !document.querySelector('#hero-translate-root') && document.readyState==='complete'`),30000);
@@ -140,5 +143,5 @@ try{
   }
   pass('Returning from each native mode remounts the themed text translator');
   assert.deepEqual(errors,[]);pass('No runtime exceptions across the live translator controls');
-  await writeFile('qa/translate-controls-results.json',JSON.stringify({source:'Trusted CDP mouse/keyboard input; actual Google service; synthetic SpeechRecognition callbacks only',checks,errors},null,2)+'\n');
+  await writeFile(`qa/translate-controls-results${suffix}.json`,JSON.stringify({origin,source:'Trusted CDP mouse/keyboard input; actual Google service; synthetic SpeechRecognition callbacks only',checks,errors},null,2)+'\n');
 }catch(error){console.error(await active?.evaluate("({url:location.href,text:document.body.innerText.slice(-1500),shadow:document.querySelector('#hero-translate-root')?.shadowRoot.innerHTML.slice(-1600)})").catch(()=>null));await snapshot(active,'translate-control-failure').catch(()=>{});throw error;}finally{await browser.stop();}

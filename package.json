@@ -1,6 +1,6 @@
 {
   "name": "google-glass-extension",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,6 +13,7 @@
     "test:yandex": "node scripts/yandex-test.mjs",
     "test:translate": "node scripts/translate-test.mjs",
     "test:translate-live": "node scripts/live-translate-check.mjs && node scripts/translate-controls-test.mjs && node scripts/translate-installed-test.mjs",
+    "test:translate-ru": "node scripts/translate-controls-test.mjs https://translate.google.ru && node scripts/translate-installed-test.mjs https://translate.google.ru",
     "test:gmail-scroll": "node scripts/gmail-scroll-test.mjs",
     "package": "node scripts/package.mjs"
   },

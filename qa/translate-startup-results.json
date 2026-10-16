@@ -1,0 +1,12 @@
+{
+  "source": "Deterministic delayed-controller fixture on the installed translate.google.ru content-script path; output is a fixture, not a real translation",
+  "checks": [
+    "Early input survives Google replacing and resetting its native textarea before initialization",
+    "Early language choices stay selected until the native controllers accept them",
+    "Initialization replays only the latest text and language pair into the new native controls",
+    "Acknowledged commands stop replaying so later native changes remain authoritative",
+    "Clear reaches the native engine and disables stale output after startup",
+    "No runtime exceptions in the delayed initialization flow"
+  ],
+  "errors": []
+}

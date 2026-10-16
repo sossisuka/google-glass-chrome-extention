@@ -1,4 +1,4 @@
-# Google Glass 1.4.2
+# Google Glass 1.4.3
 
 A ready-to-load Chrome Manifest V3 extension based on the supplied Google, Yandex, Translate, search-results and selector references. Includes HeroUI / NextUI controls, light and dark themes, uploaded backgrounds, Google AI Mode, YouTube and Gmail styling.
 
@@ -8,19 +8,29 @@ To install from GitHub, choose **Code → Download ZIP** and extract it, or clon
 
 The ZIP contains the ready-to-load extension and guides. Editable source, development scripts and QA evidence are available in the full project workspace.
 
+## Translate startup repair — 1.4.3
+
+Reproduced an intermittent failure directly on `https://translate.google.ru/`: the themed editor accepted text, then Google's initialization reset its native field and erased the themed value. The bridge now retains the latest text and language choices until Google's native URL state acknowledges them, and resends commands after delayed initialization or replacement of the native textarea. Accepted commands stop replaying; browser history and disabling the theme cancel pending commands.
+
+Tested the installed `.ru` root page and its real Russian → English translation, Copy/Share, swap, language menus, settings and native document/image/website controls. Share links and Translate navigation retain the current `.ru` or `.com` domain. [Startup regression and live-domain review](qa/translate-startup-review.md).
+
+![Live translate.google.ru translation and successful Copy](qa/translate-live-ru-en-ru.png)
+
+Reload Google Glass at `chrome://extensions`, confirm **1.4.3**, then refresh/reopen `translate.google.ru`. Load the compiled **`extension`** folder from this repository; existing tabs retain the old injected scripts until refreshed.
+
 ## Translate state and Copy repair — 1.4.2
 
 Translate now follows native `sl`/`tl` URL changes, browser history and textarea values even when Google produces no DOM mutation. The visible language pair and result no longer remain stale after navigation. Copy and Share use a direct-copy fallback when the site's Clipboard API permission is denied; no clipboard-reading permission is added. Clear also clears stale native output immediately.
 
 Verified on the real Google Translate site with Russian → English (`Доброе утро` → `Good morning`) and a clipboard read after copying. The same isolated profile also exercised the installed `www.google.com` homepage's apps and shared settings modal. [Regression review](qa/translate-state-review.md) · [Live ru→en capture](qa/translate-live-ru-en.png).
 
-Reload Google Glass at `chrome://extensions`, confirm **1.4.2**, then refresh existing Translate tabs. The previous 1.4.1 body-isolation change did not cover the URL/value synchronization and clipboard-denial cases; this release adds those regression checks.
+The 1.4.2 repair added URL/value synchronization and clipboard-denial regression checks. Upgrade to the current **1.4.3** and refresh existing Translate tabs to also receive the startup repair.
 
 ## Installed-page interaction repair — 1.4.1
 
 The Google, Translate and Yandex interfaces now mount outside the native page body. This prevents body-level capture handlers and inherited `inert` states from swallowing clicks, keystrokes and focus while the local preview remains interactive. The regression was reproduced with the previous placement and verified with real mouse/keyboard input after the fix.
 
-**After updating:** reload **Google Glass** at `chrome://extensions`, confirm the latest version **1.4.2**, then close and reopen affected site tabs. Existing tabs keep their previously injected JavaScript until refreshed. The compiled folder in this workspace is `D:\Projects\google\extension`.
+**After updating:** reload **Google Glass** at `chrome://extensions`, confirm the latest version **1.4.3**, then close and reopen affected site tabs. Existing tabs keep their previously injected JavaScript until refreshed. The compiled folder in this workspace is `D:\Projects\google\extension`.
 
 The installed root URL `https://translate.google.com/` was tested directly: apps, searchable languages, modal settings/save, keyboard, clear, input and real translation. See [the installed interaction review](qa/installed-interaction-review.md) and [browser capture](qa/translate-installed-interactions.png).
 
@@ -213,6 +223,8 @@ Run `node scripts/gmail-theme-test.mjs` for plain and formatted email contrast, 
 `npm run test:yandex` checks Yandex search, service assets, keyboard, shortcut editing, mobile dialogs, provider switching, shared background upload, nested selectors, hourly weather and native-page restoration. See [the Yandex reference comparison and review](qa/yandex-design-qa.md).
 
 `npm run test:translate` checks the Translate layout, keyboard, language search/swap, input limit, provider settings, backgrounds, first paint and native integration with deterministic fixtures. `npm run test:gmail-scroll` covers the exact supplied logo DOM, scrolling toolbar layers, Compose gradient and native icons. Both are included in the full test suite. `npm run test:translate-live` separately verifies real text translation, language changes, trusted mouse clicks, copy/share, swapping, native rating/feedback, document/image file choosers and website entry on current public Google Translate. Voice start/stop, results and error handling use controlled SpeechRecognition callbacks; no microphone audio is recorded by QA. See [the 1.4 review](qa/translate-gmail-design-qa.md).
+
+`npm run test:translate-ru` runs the live controls and installed root-page flows specifically on `translate.google.ru`. The full `npm test` also includes delayed-native-initialization regressions. See [the 1.4.3 review](qa/translate-startup-review.md).
 
 `node scripts/live-youtube-check.mjs` checks current public YouTube video components, video menus, the Share modal and the signed-out header dropdown. It uses a public channel's components on a home-route test surface, without a signed-in profile. Evidence is saved under `qa/youtube-fixed-live-*` and `qa/youtube-live-test-results.json`.
 

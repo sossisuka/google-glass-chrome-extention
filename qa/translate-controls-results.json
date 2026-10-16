@@ -1,4 +1,5 @@
 {
+  "origin": "https://translate.google.com",
   "source": "Trusted CDP mouse/keyboard input; actual Google service; synthetic SpeechRecognition callbacks only",
   "checks": [
     "Trusted keyboard clicks append multiple keys, delete, insert spaces and replace selected text",
